@@ -2,12 +2,14 @@
 #include "CameraDebug.h"
 #include "Geometory.h"
 #include "ShaderList.h"
+#include "Stage.h"
 
 SceneGame::SceneGame()
-	:m_pPlayer(nullptr)
-	,m_pCamera(nullptr)
-	,m_pGround(nullptr)
-	,m_pModel(nullptr)
+	: m_pPlayer(nullptr)
+	, m_pCamera(nullptr)
+	, m_pGround(nullptr)
+	, m_pModel(nullptr)
+	, m_pStage(nullptr)
 {
 	m_pGround = new Ground;
 	m_pGround->SetPos(0.0f, 0.0f, 0.0f);
@@ -18,6 +20,8 @@ SceneGame::SceneGame()
 	m_pPlayer->SetScale(1.5f, 0.25f, 0.5f);
 
 	m_pCamera = new CameraDebug();
+
+	m_pStage = new Stage();
 
 	m_pModel = new Model();
 	if (!m_pModel->Load("Assets/Model/tree_forest.fbx", 1.0f, Model::None)) {
@@ -33,6 +37,11 @@ SceneGame::~SceneGame()
 	if (m_pModel) {
 		delete m_pModel;
 		m_pModel = nullptr;
+	}
+
+	if (m_pStage) {
+		delete m_pStage;
+		m_pStage = nullptr;
 	}
 
 	if (m_pCamera) {
@@ -56,6 +65,7 @@ void SceneGame::Update()
 	m_pGround->Update();
 	m_pPlayer->Update();
 	m_pCamera->Update();
+	m_pStage->Update();
 
 }
 
@@ -67,6 +77,7 @@ void SceneGame::Draw()
 
 	m_pGround->Draw();
 	m_pPlayer->Draw();
+	m_pStage->Draw();
 
 	if (m_pModel) {
 		//モデルを表示するためのワールド行列を計算

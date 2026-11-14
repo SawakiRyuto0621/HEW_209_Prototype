@@ -7,6 +7,8 @@
 #include "Ground.h"
 #include "Model.h"
 
+class Stage;
+
 class SceneGame : public Scene
 {
 public:
@@ -20,6 +22,7 @@ private:
 	Camera* m_pCamera;
 	Ground* m_pGround; //地面オブジェクト
 	Model* m_pModel;
+	Stage* m_pStage;
 };
 
 #endif // __SCENE_GAME_H__
