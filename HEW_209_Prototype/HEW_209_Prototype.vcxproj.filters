@@ -99,6 +99,15 @@
     <ClCompile Include="WindParticles.cpp">
       <Filter>ソース ファイル\Work</Filter>
     </ClCompile>
+    <ClCompile Include="Wind.cpp">
+      <Filter>ソース ファイル\Work</Filter>
+    </ClCompile>
+    <ClCompile Include="WindArea.cpp">
+      <Filter>ソース ファイル\Work</Filter>
+    </ClCompile>
+    <ClCompile Include="WindWave.cpp">
+      <Filter>ソース ファイル\Work</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h">
@@ -156,6 +165,15 @@
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
     <ClInclude Include="Stage.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Wind.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="WindArea.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="WindWave.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>

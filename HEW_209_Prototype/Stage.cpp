@@ -1,37 +1,33 @@
 #include "Stage.h"
-#include "WindParticles.h"
-
-constexpr int WindParticlesNum = 8;
+#include "Wind.h"
 
 Stage::Stage()
 	: m_pos{ 0.0f, 0.0f, 0.0f }
 	, m_scale{ 1.0f, 1.0f, 1.0f }
-	, m_pWindParticles(nullptr)
+	, m_pWind(nullptr)
 {
 
-	// 風のパーティクル
-	m_pWindParticles = new WindParticles;
-	m_pWindParticles->SetPos(-5.0f, 0.0f, 0.0f);
-	m_pWindParticles->SetScale(0.1f, 0.1f, 0.1f);
+	// 風
+	m_pWind = new Wind(true); // true右向き, false左
 }
 
 Stage::~Stage()
 {
-	if (m_pWindParticles) // 風のパーティクル
+	if (m_pWind)// 風
 	{
-		delete m_pWindParticles;
-		m_pWindParticles = nullptr;
+		delete m_pWind;
+		m_pWind = nullptr;
 	}
 }
 
 void Stage::Update()
 {
-	m_pWindParticles->Update();
+	m_pWind->Update(); // 風
 }
 
 void Stage::Draw()
 {
-	m_pWindParticles->Draw(); // 風のパーティクル
+	m_pWind->Draw(); // 風
 }
 
 void Stage::SetPos(float x, float y, float z)

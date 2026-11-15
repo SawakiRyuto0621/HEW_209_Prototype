@@ -161,7 +161,10 @@
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="Startup.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Wind.cpp" />
+    <ClCompile Include="WindArea.cpp" />
     <ClCompile Include="WindParticles.cpp" />
+    <ClCompile Include="WindWave.cpp" />
     <ClCompile Include="_geometory.cpp" />
     <ClCompile Include="_model.cpp" />
   </ItemGroup>
@@ -184,7 +187,10 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Wind.h" />
+    <ClInclude Include="WindArea.h" />
     <ClInclude Include="WindParticles.h" />
+    <ClInclude Include="WindWave.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,7 +2,7 @@
 
 // Stage関連はSceneGameからここに
 
-class WindParticles;
+class Wind;
 
 class Stage
 {
@@ -10,7 +10,7 @@ private:
 	float m_pos[3];
 	float m_scale[3];
 
-	WindParticles* m_pWindParticles; // 風のパーティクル
+	Wind* m_pWind; // 風
 
 public:
 	Stage();
