@@ -23,10 +23,16 @@ SceneGame::SceneGame()
 
 	m_pStage = new Stage();
 
-	m_pModel = new Model();
+	// 木のオブジェクト
+	m_pTree = new Tree();
+	m_pTree->SetPos(0.0f, 0.0f, 0.0f);
+	m_pTree->SetScale(0.8f, 0.8f, 0.8f);
+
+	/*m_pModel = new Model();
 	if (!m_pModel->Load("Assets/Model/tree_forest.fbx", 1.0f, Model::None)) {
 		MessageBox(NULL, "tree_forest.fbx", "error", MB_OK);
-	}
+	}*/
+
 
 	//深度テストの有効性
 	SetDepthTest(DEPTH_ENABLE);
@@ -34,9 +40,14 @@ SceneGame::SceneGame()
 
 SceneGame::~SceneGame()
 {
-	if (m_pModel) {
+	/*if (m_pModel) {
 		delete m_pModel;
 		m_pModel = nullptr;
+	}*/
+
+	if (m_pTree){
+		delete m_pTree;
+		m_pTree = nullptr;
 	}
 
 	if (m_pStage) {
@@ -66,6 +77,7 @@ void SceneGame::Update()
 	m_pPlayer->Update();
 	m_pCamera->Update();
 	m_pStage->Update();
+	m_pTree->Update();
 
 }
 
@@ -78,7 +90,9 @@ void SceneGame::Draw()
 	m_pGround->Draw();
 	m_pPlayer->Draw();
 	m_pStage->Draw();
+	m_pTree->Draw();
 
+	/*
 	if (m_pModel) {
 		//モデルを表示するためのワールド行列を計算
 		DirectX::XMFLOAT4X4 fWorld;
@@ -120,6 +134,7 @@ void SceneGame::Draw()
 
 
 	}
+	*/
 
 
 }
