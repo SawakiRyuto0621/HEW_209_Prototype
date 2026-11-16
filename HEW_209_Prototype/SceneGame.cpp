@@ -123,3 +123,28 @@ void SceneGame::Draw()
 
 
 }
+
+bool SceneGame::bInWind() // Player Z座標が風の範囲内かチェック
+{
+	float WindPosZ = m_pStage->GetWindPosZ();
+	float PlayerPosZ = m_pPlayer->GetPosZ();
+	float WindWidth = m_pStage->GetWindWidth();
+	if (PlayerPosZ <= WindPosZ + WindWidth / 2.0f && PlayerPosZ >= WindPosZ - WindWidth / 2.0f)
+	{
+		return true;
+	}
+	return false;
+}
+
+void SceneGame::WindtoPlayer()
+{
+	if (!bInWind()) return;
+	if (m_pStage->GetWindDirectionRight()) // 風が右向き
+	{
+
+	}
+	else // 左向き
+	{
+
+	}
+}

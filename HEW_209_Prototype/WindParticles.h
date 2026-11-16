@@ -9,12 +9,16 @@ private:
 	float m_fPaPos[3];
 	float m_fPbPos[3];
 	float m_fEndPos[3];
+	float m_fStartZ_Pos;
 	float m_fWaveCnt; // ベジェ曲線用カウント
+	float m_fWindWidth;
+	int m_nFrontBackPattern;
+	int m_nStrength;
 	bool m_bDirectionRight; // 右に向くか
 	bool m_bReborn;
 
 public:
-	WindParticles(float posZ, bool directionRight, int pattern);
+	WindParticles(float posZ, bool directionRight,float width, int pattern, int strength);
 	~WindParticles();
 	void Update();
 	void Draw();
@@ -23,4 +27,7 @@ public:
 	void SetScale(float x, float y, float z);
 	bool bReborn();
 	void SetReborn(bool b);
+	void ConstructorWindNormal();
+	void ConstructorWindStrong();
+	void ConstructorWindWeak();
 };

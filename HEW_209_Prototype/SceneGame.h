@@ -16,6 +16,8 @@ public:
 	~SceneGame();
 	void Update() final;
 	void Draw() final;
+	bool bInWind(); // Player Z座標が風の範囲内かチェック
+	void WindtoPlayer();
 
 private:
 	Player* m_pPlayer; //プレイヤー
