@@ -147,6 +147,7 @@
     <ClCompile Include="CameraDebug.cpp" />
     <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="Geometory.cpp" />
+    <ClCompile Include="GoalCamera.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DirectX.h" />
     <ClInclude Include="Geometory.h" />
+    <ClInclude Include="GoalCamera.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Main.h" />
