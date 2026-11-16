@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Ground.h"
 #include "Model.h"
+#include "Tree.h"
 
 class Stage;
 
@@ -25,6 +26,7 @@ private:
 	Ground* m_pGround; //地面オブジェクト
 	Model* m_pModel;
 	Stage* m_pStage;
+	Tree* m_pTree; //木オブジェクト
 };
 
 #endif // __SCENE_GAME_H__
