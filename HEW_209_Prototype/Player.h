@@ -13,6 +13,7 @@ public:
 	void Draw();
 
 	void SetPos(float x, float y, float z);
+	float GetPosZ();
 	void SetScale(float x, float y, float z);
 	
 };

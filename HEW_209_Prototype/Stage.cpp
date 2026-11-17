@@ -1,14 +1,22 @@
 #include "Stage.h"
 #include "Wind.h"
+#include <cstdlib>
+#include <ctime>
 
 Stage::Stage()
 	: m_pos{ 0.0f, 0.0f, 0.0f }
 	, m_scale{ 1.0f, 1.0f, 1.0f }
+	, m_nWindStrength(0)
+	, m_bWindDirectionRight(true)
+	, m_nPreWindStrength(0)
+	, m_bPreWindDirectionRight(true)
+	, m_bCreateWind(false)
 	, m_pWind(nullptr)
 {
-
+	m_bWindDirectionRight = rand() % 2 == 0; // 0か1
+	m_nWindStrength = rand() % 3; // 0か1か2
 	// 風
-	m_pWind = new Wind(true); // true右向き, false左
+	m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength); // true右向き, false左 // 0普通1強2弱
 }
 
 Stage::~Stage()
@@ -23,6 +31,31 @@ Stage::~Stage()
 void Stage::Update()
 {
 	m_pWind->Update(); // 風
+	if (m_pWind->bIsReborn())
+	{
+		if (m_pWind)
+		{
+			m_bPreWindDirectionRight = m_bWindDirectionRight;
+			m_nPreWindStrength = m_nWindStrength;
+
+			delete m_pWind;
+			m_pWind = nullptr;
+
+			while (!m_bCreateWind)
+			{
+				m_bWindDirectionRight = rand() % 2 == 0; // 0か1
+				m_nWindStrength = rand() % 3; // 0か1か2
+
+				if (m_bPreWindDirectionRight != m_bWindDirectionRight ||
+					m_nPreWindStrength != m_nWindStrength) // どっちらが不一致なら
+				{
+					m_bCreateWind = true;
+				}
+			}
+			m_bCreateWind = false;
+			m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength); // true右向き, false左 // 0普通1強2弱
+		}
+	}
 }
 
 void Stage::Draw()
@@ -42,4 +75,19 @@ void Stage::SetScale(float x, float y, float z)
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+float Stage::GetWindPosZ()
+{
+	return m_pWind->GetPosZ();
+}
+
+float Stage::GetWindWidth()
+{
+	return m_pWind->GetWidth();
+}
+
+bool Stage::GetWindDirectionRight()
+{
+	return m_pWind->GetWindDirectIonRight();
 }

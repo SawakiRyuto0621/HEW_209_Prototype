@@ -1,14 +1,18 @@
 #include "Wind.h"
 #include "WindWave.h"
 #include "WindArea.h"
+#include "defines.h"
 
-Wind::Wind(bool directionRight)
+constexpr float g_fWindWidth = METER(0.6f);
+
+Wind::Wind(bool directionRight, int strength)
 	: m_pWindWave(nullptr)
 	, m_pos{ 0.0f, 0.0f, 5.0f } // 初期 Z座標を設定
 	, m_scale{ 1.0f, 1.0f, 1.0f }
+	, m_fWindWidth(g_fWindWidth)
 	, m_bDirectionRight(directionRight)
 {
-	m_pWindWave = new WindWave(m_pos[2], directionRight); // Z座標、向きを渡す
+	m_pWindWave = new WindWave(m_pos[2], directionRight, m_fWindWidth, strength); // Z座標、向きを渡す
 	m_pWindArea = new WindArea();
 }
 
@@ -48,10 +52,30 @@ float Wind::GetPosZ()
 	return m_pos[2];
 }
 
+float Wind::GetWidth()
+{
+	return g_fWindWidth;
+}
+
 void Wind::SetScale(float x, float y, float z)
 {
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+bool Wind::GetWindDirectIonRight()
+{
+	return m_bDirectionRight;
+}
+
+bool Wind::bIsReborn()
+{
+	return m_pWindWave->bIsReborn();
+}
+
+void Wind::SetReborn(bool b)
+{
+	m_pWindWave->SetReborn(b);
 }
 

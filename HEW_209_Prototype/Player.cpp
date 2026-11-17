@@ -48,6 +48,11 @@ void Player::SetPos(float x, float y, float z)
 	m_pos[2] = z;
 }
 
+float Player::GetPosZ()
+{
+	return m_pos[2];
+}
+
 void Player::SetScale(float x, float y, float z)
 {
 	m_scale[0] = x;

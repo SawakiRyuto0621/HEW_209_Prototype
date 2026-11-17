@@ -8,17 +8,22 @@ class Wind
 private:
 	float m_pos[3];
 	float m_scale[3];
+	float m_fWindWidth;
 	bool m_bDirectionRight; // 右向きか
 	WindWave* m_pWindWave;
 	WindArea* m_pWindArea;
 
 public:
-	Wind(bool directionRight);
+	Wind(bool directionRight, int strength); // 右向きか、強度
 	~Wind();
 	void Update();
 	void Draw();
 
 	void SetPos(float x, float y, float z);
 	float GetPosZ(); // Z座標
+	float GetWidth();
 	void SetScale(float x, float y, float z);
+	bool GetWindDirectIonRight();
+	bool bIsReborn();
+	void SetReborn(bool b);
 };
