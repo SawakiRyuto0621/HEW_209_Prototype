@@ -7,6 +7,7 @@
 #include "Ground.h"
 #include "Model.h"
 #include "Tree.h"
+#include "Prey.h"
 
 class Stage;
 
@@ -25,6 +26,7 @@ private:
 	Model* m_pModel;
 	Stage* m_pStage;
 	Tree* m_pTree; //木オブジェクト
+	Prey* m_pPrey; //獲物
 };
 
 #endif // __SCENE_GAME_H__

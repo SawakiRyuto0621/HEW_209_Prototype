@@ -10,6 +10,8 @@ SceneGame::SceneGame()
 	, m_pGround(nullptr)
 	, m_pModel(nullptr)
 	, m_pStage(nullptr)
+	, m_pTree(nullptr)
+	, m_pPrey(nullptr)
 {
 	m_pGround = new Ground;
 	m_pGround->SetPos(0.0f, 0.0f, 0.0f);
@@ -28,6 +30,11 @@ SceneGame::SceneGame()
 	m_pTree->SetPos(0.0f, 0.0f, 0.0f);
 	m_pTree->SetScale(0.8f, 0.8f, 0.8f);
 
+	// 獲物オブジェクト
+	m_pPrey = new Prey();
+	m_pPrey->SetPos(0.0f, 3.0f, 0.0f);
+	m_pPrey->SetScale(0.5f, 0.25f, 0.5f);
+
 	/*m_pModel = new Model();
 	if (!m_pModel->Load("Assets/Model/tree_forest.fbx", 1.0f, Model::None)) {
 		MessageBox(NULL, "tree_forest.fbx", "error", MB_OK);
@@ -44,6 +51,10 @@ SceneGame::~SceneGame()
 		delete m_pModel;
 		m_pModel = nullptr;
 	}*/
+	if (m_pPrey) {
+		delete m_pPrey;
+		m_pPrey = nullptr;
+	}
 
 	if (m_pTree){
 		delete m_pTree;
@@ -78,6 +89,7 @@ void SceneGame::Update()
 	m_pCamera->Update();
 	m_pStage->Update();
 	m_pTree->Update();
+	m_pPrey->Update();
 
 }
 
@@ -91,6 +103,7 @@ void SceneGame::Draw()
 	m_pPlayer->Draw();
 	m_pStage->Draw();
 	m_pTree->Draw();
+	m_pPrey->Draw();
 
 	/*
 	if (m_pModel) {
