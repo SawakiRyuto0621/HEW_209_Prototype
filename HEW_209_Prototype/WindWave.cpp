@@ -2,7 +2,7 @@
 #include "WindParticles.h"
 #include "Wind.h"
 
-constexpr int WindParticlesNum = 8;
+constexpr int WindParticlesNum = 3;
 
 WindWave::WindWave(float posZ, bool directionRight, float width, int strength)
 	: m_pWindParticles{ nullptr, nullptr, nullptr }
@@ -73,10 +73,10 @@ bool WindWave::bIsReborn()
 	return m_bReborn;
 }
 
-void WindWave::SetReborn(bool b)
+void WindWave::SetAccelerateWithPlayer(float acceleration)
 {
 	for (int i = 0; i < 3; i++)
 	{
-		m_pWindParticles[i]->SetReborn(b);
+		m_pWindParticles[i]->SetAccelerateWithPlayer(acceleration);
 	}
 }

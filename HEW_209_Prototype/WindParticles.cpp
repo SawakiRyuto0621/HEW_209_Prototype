@@ -6,14 +6,14 @@ constexpr float g_fParticleSpeedX_Normal = METER(5.0f) / FPS; // ****** ˆê’UxÀ•
 constexpr float g_fParticleSpeedX_Strong = METER(10.0f) / FPS; // ****** ˆê’UxÀ•WˆÚ“®‘¬“x‚Ìİ’è(1ƒtƒŒƒCƒ€‚ÌˆÚ“®—Ê)(‹­)
 constexpr float g_fParticleSpeedX_Weak = METER(3.0f) / FPS; // ****** ˆê’UxÀ•WˆÚ“®‘¬“x‚Ìİ’è(1ƒtƒŒƒCƒ€‚ÌˆÚ“®—Ê)(ã)
 
-constexpr float g_fParticleX_Distance = METER(5.0f);
-constexpr float g_WaveX_Move = METER(10.0f);
-constexpr float g_WaveY_Move_Normal = METER(3.0f); // §Œä“_‚Ì‚‚³->Å‚“_–ñ0.7m
-constexpr float g_WaveY_Move_Strong = METER(1.0f); // §Œä“_‚Ì‚‚³->Å‚“_–ñ0.3m
-constexpr float g_WaveY_Move_Weak = METER(1.5f); // §Œä“_‚Ì’á‚³->Å’á“_–ñ1.1m
+constexpr float g_fParticleX_Distance = METER(5.0f); // ƒp[ƒeƒBƒNƒ‹ŠÔ‚Ì XÀ•W‹——£
+constexpr float g_WaveX_Move = METER(10.0f); // ‹ÈüI“_‚Ü‚Å‚Ì‹——£
+constexpr float g_WaveY_Move_Normal = METER(3.0f); // §Œä“_‚Ì‚‚³
+constexpr float g_WaveY_Move_Strong = METER(1.0f); // §Œä“_‚Ì‚‚³
+constexpr float g_WaveY_Move_Weak = METER(1.5f); // §Œä“_‚Ì’á‚³
 
 #ifdef _DEBUG
-constexpr float g_testZ_Speed = METER(0.02f);
+constexpr float g_testZ_Speed = METER(0.02f); // ƒeƒXƒg—pAè‘O‚ÉˆÚ“®‚Ì‘¬“x
 #endif
 
 WindParticles::WindParticles(float posZ, bool directionRight,float width, int pattern, int strength)
@@ -25,6 +25,7 @@ WindParticles::WindParticles(float posZ, bool directionRight,float width, int pa
 	, m_fPaPos{ 0.0f, 0.0f, posZ }
 	, m_fPbPos{ 0.0f, 0.0f, posZ }
 	, m_fEndPos{ 0.0f, 0.0f, posZ }
+	, m_fAccelerateWithPlayer(1.0f)
 	, m_bDirectionRight(directionRight)
 	, m_fWindWidth(width)
 	, m_nFrontBackPattern(pattern)
@@ -76,20 +77,26 @@ void WindParticles::Update()
 			m_bReborn = true; // Rebornó‘Ô‚É
 		} // ‰œ‚É–ß‚µ‚Äƒ‹[ƒv
 #ifdef _DEBUG
-		else m_pos[2] -= g_testZ_Speed; // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ƒeƒXƒg—p‚É‰œ‚©‚çè‘O‚É ZÀ•WˆÚ“®
+		else m_pos[2] -= g_testZ_Speed * m_fAccelerateWithPlayer; // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ƒeƒXƒg—p‚É‰œ‚©‚çè‘O‚É ZÀ•WˆÚ“®
 #endif
 		if (!m_bReborn)
 		{
 			switch (m_nStrength) // ‹­“x‚Å XÀ•WˆÚ“®‘¬“x
 			{
 			case 0:
-				m_fWaveCnt += 1.0f / (g_WaveX_Move / g_fParticleSpeedX_Normal); // 1 / (g_WaveX_Move‚Ü‚Å•K{‚ÌƒtƒŒƒCƒ€”)
+				m_fWaveCnt += 1.0f / (g_WaveX_Move / 
+					(g_fParticleSpeedX_Normal * m_fAccelerateWithPlayer)); 
+				// 1 / (g_WaveX_Move‚Ü‚Å•K{‚ÌƒtƒŒƒCƒ€”)
 				break;
 			case 1:
-				m_fWaveCnt += 1.0f / (g_WaveX_Move / g_fParticleSpeedX_Strong); // 1 / (g_WaveX_Move‚Ü‚Å•K{‚ÌƒtƒŒƒCƒ€”)
+				m_fWaveCnt += 1.0f / (g_WaveX_Move /
+					(g_fParticleSpeedX_Strong * m_fAccelerateWithPlayer)); 
+				// 1 / (g_WaveX_Move‚Ü‚Å•K{‚ÌƒtƒŒƒCƒ€”)
 				break;
 			case 2:
-				m_fWaveCnt += 1.0f / (g_WaveX_Move / g_fParticleSpeedX_Weak); // 1 / (g_WaveX_Move‚Ü‚Å•K{‚ÌƒtƒŒƒCƒ€”)
+				m_fWaveCnt += 1.0f / (g_WaveX_Move /
+					(g_fParticleSpeedX_Weak * m_fAccelerateWithPlayer)); 
+				// 1 / (g_WaveX_Move‚Ü‚Å•K{‚ÌƒtƒŒƒCƒ€”)
 				break;
 			default:
 				break;
@@ -137,11 +144,6 @@ bool WindParticles::bReborn()
 	return m_bReborn;
 }
 
-void WindParticles::SetReborn(bool b)
-{
-	m_bReborn = b;
-}
-
 void WindParticles::ConstructorWindNormal() // ‹­“xF•’Ê
 {
 	if (m_bDirectionRight) // -------------------------------------------------------------------------- ‰EŒü‚«
@@ -152,14 +154,14 @@ void WindParticles::ConstructorWindNormal() // ‹­“xF•’Ê
 		case 0: // ^‚ñ’†
 			break;
 		case 1: // ‰œ
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
 		case 2: // è‘O
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
@@ -184,14 +186,14 @@ void WindParticles::ConstructorWindNormal() // ‹­“xF•’Ê
 		case 0: // ^‚ñ’†
 			break;
 		case 1: // ‰œ
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
 		case 2: // è‘O
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
@@ -220,14 +222,14 @@ void WindParticles::ConstructorWindStrong() // ‹­“xF‹­
 		case 0: // ^‚ñ’†
 			break;
 		case 1: // ‰œ
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
 		case 2: // è‘O
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
@@ -252,14 +254,14 @@ void WindParticles::ConstructorWindStrong() // ‹­“xF‹­
 		case 0: // ^‚ñ’†
 			break;
 		case 1: // ‰œ
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
 		case 2: // è‘O
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
@@ -288,14 +290,14 @@ void WindParticles::ConstructorWindWeak()
 		case 0: // ^‚ñ’†
 			break;
 		case 1: // ‰œ
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
 		case 2: // è‘O
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
@@ -320,14 +322,14 @@ void WindParticles::ConstructorWindWeak()
 		case 0: // ^‚ñ’†
 			break;
 		case 1: // ‰œ
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
 		case 2: // è‘O
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
@@ -344,5 +346,10 @@ void WindParticles::ConstructorWindWeak()
 		m_fEndPos[1] = m_fStartPos[1];
 		m_fEndPos[2] = m_fStartPos[2]; // ƒxƒWƒF‹ÈüI“_
 	}
+}
+
+void WindParticles::SetAccelerateWithPlayer(float acceleration)
+{
+	m_fAccelerateWithPlayer = acceleration;
 }
 

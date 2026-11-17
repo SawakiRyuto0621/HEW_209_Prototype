@@ -25,5 +25,5 @@ public:
 	void SetScale(float x, float y, float z);
 	bool GetWindDirectIonRight();
 	bool bIsReborn();
-	void SetReborn(bool b);
+	void SetAccelerateWithPlayer(float acceleration); // •—‚Ì XÀ•WˆÚ“®‘¬“x‚ª stage‚Ì ZˆÚ“®‘¬“x‚Æ”ä—á‚·‚é
 };

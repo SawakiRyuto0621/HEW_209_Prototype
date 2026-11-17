@@ -3,7 +3,7 @@
 #include "WindArea.h"
 #include "defines.h"
 
-constexpr float g_fWindWidth = METER(0.6f);
+constexpr float g_fWindWidth = METER(3.0f);
 
 Wind::Wind(bool directionRight, int strength)
 	: m_pWindWave(nullptr)
@@ -74,8 +74,8 @@ bool Wind::bIsReborn()
 	return m_pWindWave->bIsReborn();
 }
 
-void Wind::SetReborn(bool b)
+void Wind::SetAccelerateWithPlayer(float acceleration)
 {
-	m_pWindWave->SetReborn(b);
+	m_pWindWave->SetAccelerateWithPlayer(acceleration);
 }
 

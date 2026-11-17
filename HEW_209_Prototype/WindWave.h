@@ -21,5 +21,5 @@ public:
 	void SetPos(float x, float y, float z);
 	void SetScale(float x, float y, float z);
 	bool bIsReborn();
-	void SetReborn(bool b);
+	void SetAccelerateWithPlayer(float acceleration);
 };
