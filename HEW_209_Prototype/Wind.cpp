@@ -3,7 +3,13 @@
 #include "WindArea.h"
 #include "defines.h"
 
-constexpr float g_fWindWidth = METER(3.0f);
+// ********************  開発履歴  ********************
+// 2026/11/14  *****  陳  *****  クラス作成
+// 2026/11/15  *****  陳  *****  風（パーティクル）が指定の向きに曲線移動
+// 2026/11/16  *****  陳  *****  強度指定、ランダムパターンで風の生成、再生成
+// 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
+
+constexpr float g_fWindWidth = METER(2.0f);
 
 Wind::Wind(bool directionRight, int strength)
 	: m_pWindWave(nullptr)

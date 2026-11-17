@@ -31,4 +31,5 @@ public:
 	void ConstructorWindStrong();
 	void ConstructorWindWeak();
 	void SetAccelerateWithPlayer(float acceleration);
+	void ParticlesLocation();
 };

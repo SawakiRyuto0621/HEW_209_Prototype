@@ -3,6 +3,12 @@
 #include <cstdlib>
 #include <ctime>
 
+// ********************  開発履歴  ********************
+// 2026/11/14  *****  陳  *****  クラス作成
+// 2026/11/15  *****  陳  *****  風（パーティクル）が指定の向きに曲線移動
+// 2026/11/16  *****  陳  *****  強度指定、ランダムパターンで風の生成、再生成
+// 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
+
 Stage::Stage()
 	: m_pos{ 0.0f, 0.0f, 0.0f }
 	, m_scale{ 1.0f, 1.0f, 1.0f }
@@ -59,8 +65,8 @@ void Stage::Update()
 		}
 	}
 	else if ((int)(5.0f / 1.0f) - m_nStageSpeedRatio >= 1) // ******** ここは(現在速度 / 最低速度)を入れる
-	{
-		m_nStageSpeedRatio += (int)(5.0f - m_nStageSpeedRatio); // ******** 現在速度を入れる
+	{											//	一倍以上になったら
+		m_nStageSpeedRatio += (int)(5.0f - m_nStageSpeedRatio); // ******** 現在速度を入れる // 倍率更新
 		SetWindAccelerateWithPlayer(); // 風の X座標移動速度が stageの Z移動速度と比例する
 	}
 }
