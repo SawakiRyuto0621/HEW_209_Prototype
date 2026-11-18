@@ -18,10 +18,6 @@ constexpr float g_WaveY_Move_Normal = METER(3.0f); // 制御点の高さ
 constexpr float g_WaveY_Move_Strong = METER(1.0f); // 制御点の高さ
 constexpr float g_WaveY_Move_Weak = METER(1.5f); // 制御点の低さ
 
-#ifdef _DEBUG
-constexpr float g_testZ_Speed = METER(0.02f); // テスト用、手前に移動の速度
-#endif
-
 WindParticles::WindParticles(float posZ, bool directionRight,float width, int pattern, int strength)
 	: m_pos{ 5.0f, 1.5f, posZ} // ***** 初期位置座標を調整
 	, m_scale{ 0.2f, 0.2f, 0.2f }
@@ -76,7 +72,7 @@ void WindParticles::Update()
 			+ m_fPaPos[1] * (1.0f - m_fWaveCnt) * (1.0f - m_fWaveCnt) * (3.0f * m_fWaveCnt)
 			+ m_fPbPos[1] * (1.0f - m_fWaveCnt) * 3.0f * m_fWaveCnt * m_fWaveCnt
 			+ m_fEndPos[1] * m_fWaveCnt * m_fWaveCnt * m_fWaveCnt; // y座標移動
-		if (m_pos[2] < -6.0f) // カメラが映らないまで近く
+		if (m_pos[2] < METER(- 4.0f) - m_fWindWidth) // カメラが映らないまで近く
 		{
 			m_pos[2] = m_fStartZ_Pos; // Z座標 reset
 			m_fWaveCnt = 0.0f;

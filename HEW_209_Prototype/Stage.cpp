@@ -2,12 +2,16 @@
 #include "Wind.h"
 #include <cstdlib>
 #include <ctime>
+#include "Defines.h"
 
 // ********************  開発履歴  ********************
 // 2026/11/14  *****  陳  *****  クラス作成
 // 2026/11/15  *****  陳  *****  風（パーティクル）が指定の向きに曲線移動
 // 2026/11/16  *****  陳  *****  強度指定、ランダムパターンで風の生成、再生成
 // 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
+#ifdef _DEBUG
+constexpr float g_testZ_Speed_Ratio = 3.0f; // テスト用、現在速度 / 最低速度の倍率
+#endif
 
 Stage::Stage()
 	: m_pos{ 0.0f, 0.0f, 0.0f }
@@ -24,6 +28,7 @@ Stage::Stage()
 	m_nWindStrength = rand() % 3; // 0か1か2
 	// 風
 	m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength); // true右向き, false左 // 0普通1強2弱
+	SetWindAccelerateWithPlayer();
 }
 
 Stage::~Stage()
@@ -62,11 +67,17 @@ void Stage::Update()
 			}
 			m_bCreateWind = false; // フラグを戻す
 			m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength); // 再生成
+			SetWindAccelerateWithPlayer();
 		}
 	}
-	else if ((int)(5.0f / 1.0f) - m_nStageSpeedRatio >= 1) // ******** ここは(現在速度 / 最低速度)を入れる
-	{											//	一倍以上になったら
-		m_nStageSpeedRatio += (int)(5.0f - m_nStageSpeedRatio); // ******** 現在速度を入れる // 倍率更新
+	else if ((int)(g_testZ_Speed_Ratio / 1.0f) - m_nStageSpeedRatio >= 1) // ******** (現在速度 / 最低速度)を入れる
+	{ // 現在速度が前の倍率より一倍以上速くなった
+		m_nStageSpeedRatio += (int)(g_testZ_Speed_Ratio - m_nStageSpeedRatio); // ******** 現在速度を入れる // 倍率更新
+		SetWindAccelerateWithPlayer(); // 風の X座標移動速度が stageの Z移動速度と比例する
+	}
+	else if (m_nStageSpeedRatio - (int)(g_testZ_Speed_Ratio / 1.0f) >= 1) // ******** (現在速度 / 最低速度)を入れる
+	{// 現在速度が前の倍率より一倍以上遅くなった
+		m_nStageSpeedRatio -= abs((int)(g_testZ_Speed_Ratio - m_nStageSpeedRatio)); // ******** 現在速度を入れる // 倍率更新
 		SetWindAccelerateWithPlayer(); // 風の X座標移動速度が stageの Z移動速度と比例する
 	}
 }

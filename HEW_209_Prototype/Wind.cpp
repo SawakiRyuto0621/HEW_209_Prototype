@@ -13,13 +13,13 @@ constexpr float g_fWindWidth = METER(2.0f);
 
 Wind::Wind(bool directionRight, int strength)
 	: m_pWindWave(nullptr)
-	, m_pos{ 0.0f, 0.0f, 5.0f } // 初期 Z座標を設定
+	, m_pos{ 0.0f, 0.0f, 10.0f } // 初期 Z座標を設定
 	, m_scale{ 1.0f, 1.0f, 1.0f }
 	, m_fWindWidth(g_fWindWidth)
 	, m_bDirectionRight(directionRight)
 {
 	m_pWindWave = new WindWave(m_pos[2], directionRight, m_fWindWidth, strength); // Z座標、向きを渡す
-	m_pWindArea = new WindArea();
+	m_pWindArea = new WindArea(m_pos[2], m_fWindWidth);
 }
 
 Wind::~Wind()
@@ -83,5 +83,6 @@ bool Wind::bIsReborn()
 void Wind::SetAccelerateWithPlayer(float acceleration)
 {
 	m_pWindWave->SetAccelerateWithPlayer(acceleration);
+	m_pWindArea->SetAccelerateWithPlayer(acceleration);
 }
 
