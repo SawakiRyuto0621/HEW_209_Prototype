@@ -4,10 +4,12 @@
 #include "Defines.h"
 
 Player::Player()
-	:m_pos{0.0f, 0.0f,0.0f}
-	,m_scale{1.0f, 1.0f, 1.0f}
+	: m_pos{0.0f, 0.0f,0.0f}
+	, m_scale{1.0f, 1.0f, 1.0f}
+	, m_angle(0.0f)
 	, m_fSpeed {0.0f, 0.0f, 0.0f} // Playerの速度を取得(現在は主にX)
 	, m_bKeyPress(false) // キーを押しているか（今は左右だけ）
+	, m_bTurn(false) // 左右旋回フラグ
 {
 }
 
@@ -18,9 +20,36 @@ Player::~Player()
 
 void Player::Update()
 {
+	
 	const float speed = METER(5.0f) / FPS;
-	if (IsKeyPress('A')) { m_pos[0] -= speed; }
-	if (IsKeyPress('D')) { m_pos[0] += speed; }
+	
+	if (IsKeyPress('A') || IsKeyPress('D'))
+	{ 
+		if (IsKeyPress('A')) // 左旋回
+		{
+			m_bTurn = true;
+			// 移動制限まで移動
+			if (m_pos[0] > METER(-5.5f)) { m_pos[0] -= speed; }
+			// 旋回角度
+			if (m_angle < DirectX::XMConvertToRadians(25.0f))
+				m_angle += DirectX::XMConvertToRadians(1.0f);
+		}
+		else if (IsKeyPress('D')) // 右旋回
+		{
+			m_bTurn = true;
+			// 移動制限まで移動
+			if (m_pos[0] < METER(5.5f)) { m_pos[0] += speed; }
+			// 旋回角度
+			if (m_angle > DirectX::XMConvertToRadians(-25.0f))
+				m_angle -= DirectX::XMConvertToRadians(1.0f);
+		}
+	
+	}
+	else 
+	{
+		m_bTurn = false;
+		m_angle = 0.0f;
+	}
 
 	if (IsKeyPress(VK_LEFT) || IsKeyPress(VK_RIGHT)) // 左右移動でスクロールの速度
 	{
@@ -38,11 +67,21 @@ void Player::Update()
 void Player::Draw()
 {
 	//変換行列の計算
-	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
-
-	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
-
-	DirectX::XMMATRIX mat = S * T;
+	DirectX::XMMATRIX mat;
+	
+	if (m_bTurn)
+	{
+		DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(m_angle);
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
+        DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
+		mat = S * Z * T;
+	}
+	else
+	{
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
+		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
+		mat = S * T;
+	}
 
 	//変換行列をGPUに渡すための前処理
 	mat = DirectX::XMMatrixTranspose(mat); // 行列を転置する
