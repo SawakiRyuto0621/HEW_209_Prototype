@@ -22,12 +22,14 @@ public:
 	void WindtoPlayer();
 
 private:
+	static const int TREE_NUM = 2;	// 木の管理（必要に応じて本数を変更可）
+
 	Player* m_pPlayer; //プレイヤー
 	Camera* m_pCamera;
 	Ground* m_pGround; //地面オブジェクト
 	Model* m_pModel;
 	Stage* m_pStage;
-	Tree* m_pTree; //木オブジェクト
+	Tree* m_pTree[TREE_NUM]; //木オブジェクト 複数の木をまとめて管理するための配列
 	Prey* m_pPrey; //獲物
 };
 
