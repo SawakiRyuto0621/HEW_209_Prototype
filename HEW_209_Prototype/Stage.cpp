@@ -16,6 +16,10 @@ constexpr float g_testZ_Speed_Ratio = 3.0f; // テスト用、現在速度 / 最低速度の倍
 Stage::Stage()
 	: m_pos{ 0.0f, 0.0f, 0.0f }
 	, m_scale{ 1.0f, 1.0f, 1.0f }
+	, m_fSpeed {0.0f, 0.0f, METER(15.0f * 1000) / (FPS * 60 * 60)}
+	, m_fAddedSpeedFromPlayerX(0.0f)
+	, m_fAddedSpeedFromPlayerY(0.0f)
+	, m_fAddedSpeedFromPlayerZ(0.0f)
 	, m_nWindStrength(0) // 風の強度をランダム生成用(０普通、１強、２弱)
 	, m_bWindDirectionRight(true) // 風の向きをランダム生成用(true右向き)
 	, m_nPreWindStrength(0) // 一致の風が２回生成しないための記録
@@ -42,6 +46,7 @@ Stage::~Stage()
 
 void Stage::Update()
 {
+	SetSpeed(m_fSpeed[0], m_fSpeed[1], m_fSpeed[2]);
 	m_pWind->Update(); // 風
 	if (m_pWind->bIsReborn()) // カメラの後ろに、Reborn状態
 	{
@@ -70,16 +75,16 @@ void Stage::Update()
 			SetWindAccelerateWithPlayer();
 		}
 	}
-	else if ((int)(g_testZ_Speed_Ratio / (METER(5.0f * 1000) / (FPS * 60 * 60)))
+	else if ((int)(m_fSpeed[2] / (METER(5.0f * 1000) / (FPS * 60 * 60)))
 		- m_nStageSpeedRatio >= 1) // ******** (現在速度 / 最低速度)を入れる
 	{ // 現在速度が前の倍率より一倍以上速くなった
-		m_nStageSpeedRatio += (int)(g_testZ_Speed_Ratio - m_nStageSpeedRatio); // ******** 現在速度を入れる // 倍率更新
+		m_nStageSpeedRatio += (int)(m_fSpeed[2] - m_nStageSpeedRatio); // ******** 現在速度を入れる // 倍率更新
 		SetWindAccelerateWithPlayer(); // 風の X座標移動速度が stageの Z移動速度と比例する
 	}
 	else if (m_nStageSpeedRatio - 
-		(int)(g_testZ_Speed_Ratio / (METER(5.0f * 1000) / (FPS * 60 * 60))) >= 1) // ******** (現在速度 / 最低速度)を入れる
+		(int)(m_fSpeed[2] / (METER(5.0f * 1000) / (FPS * 60 * 60))) >= 1) // ******** (現在速度 / 最低速度)を入れる
 	{// 現在速度が前の倍率より一倍以上遅くなった
-		m_nStageSpeedRatio -= abs((int)(g_testZ_Speed_Ratio - m_nStageSpeedRatio)); // ******** 現在速度を入れる // 倍率更新
+		m_nStageSpeedRatio -= abs((int)(m_fSpeed[2] - m_nStageSpeedRatio)); // ******** 現在速度を入れる // 倍率更新
 		SetWindAccelerateWithPlayer(); // 風の X座標移動速度が stageの Z移動速度と比例する
 	}
 }
@@ -101,6 +106,21 @@ void Stage::SetScale(float x, float y, float z)
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+void Stage::SetSpeed(float x, float y, float z) // **********************************************************************
+{
+	m_pWind->SetSpeed(m_fSpeed[0] + m_fAddedSpeedFromPlayerX
+					, m_fSpeed[1] + m_fAddedSpeedFromPlayerY
+					, m_fSpeed[2] + m_fAddedSpeedFromPlayerZ);
+
+}
+
+void Stage::AddSpeedFromPlayer(float x, float y, float z)
+{
+	m_fAddedSpeedFromPlayerX = x;
+	m_fAddedSpeedFromPlayerY = y;
+	m_fAddedSpeedFromPlayerZ = z;
 }
 
 float Stage::GetWindPosZ() // 風の中心の Z座標を取得

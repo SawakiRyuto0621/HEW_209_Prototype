@@ -3,6 +3,7 @@
 #include "Geometory.h"
 #include "ShaderList.h"
 #include "Stage.h"
+#include "DirectXMath.h"
 
 // ********************  開発履歴  ********************
 // 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
@@ -100,6 +101,14 @@ void SceneGame::Update()
 	m_pGround->Update();
 	m_pPlayer->Update();
 	m_pCamera->Update();
+
+	if (m_pPlayer->GetKeyPress())
+	{
+		DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed();
+		m_pStage->AddSpeedFromPlayer(playerSpeed.x, playerSpeed.y, playerSpeed.z);
+	}
+	else m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, 0.0f);
+
 	m_pStage->Update();
 	for (int i = 0; i < TREE_NUM; ++i) {
 		m_pTree[i]->Update();
@@ -196,4 +205,9 @@ void SceneGame::WindtoPlayer()
 	{
 
 	}
+}
+
+void SceneGame::SetSpeedFromPlayer(DirectX::XMFLOAT3 speed)
+{
+	m_pStage->SetSpeed(speed.x, speed.y, speed.z);
 }

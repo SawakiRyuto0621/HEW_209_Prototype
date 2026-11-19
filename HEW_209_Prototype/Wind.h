@@ -1,4 +1,5 @@
 #pragma once
+#include "DirectX.h"
 
 class WindWave;
 class WindArea;
@@ -23,6 +24,7 @@ public:
 	float GetPosZ(); // Z座標
 	float GetWidth();
 	void SetScale(float x, float y, float z);
+	void SetSpeed(float x, float y, float z);
 	bool GetWindDirectIonRight();
 	bool bIsReborn();
 	void SetAccelerateWithPlayer(float acceleration); // 風の X座標移動速度が stageの Z移動速度と比例する

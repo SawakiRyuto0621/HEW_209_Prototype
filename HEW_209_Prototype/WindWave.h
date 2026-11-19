@@ -10,6 +10,7 @@ class WindWave
 private:
 	float m_pos[3];
 	float m_scale[3];
+	float m_speed[3];
 	bool m_bDirectionRight; // 右向きか
 	bool m_bReborn;
 	WindParticles* m_pWindParticles[WindParticlesNum]; // ***** 一旦3つのパーティクルを作成した *****
@@ -22,6 +23,7 @@ public:
 
 	void SetPos(float x, float y, float z);
 	void SetScale(float x, float y, float z);
+	void SetSpeed(float x, float y, float z);
 	bool bIsReborn();
 	void SetAccelerateWithPlayer(float acceleration);
 };

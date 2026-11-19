@@ -8,6 +8,7 @@
 #include "Model.h"
 #include "Tree.h"
 #include "Prey.h"
+#include "DirectXMath.h"
 
 class Stage;
 
@@ -20,6 +21,7 @@ public:
 	void Draw() final;
 	bool bInWind(); // Player Z座標が風の範囲内かチェック
 	void WindtoPlayer();
+	void SetSpeedFromPlayer(DirectX::XMFLOAT3 speed);
 
 private:
 	static const int TREE_NUM = 2;	// 木の管理（必要に応じて本数を変更可）

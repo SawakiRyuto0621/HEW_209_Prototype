@@ -8,9 +8,9 @@
 // 2026/11/16  *****  陳  *****  強度指定、ランダムパターンで風の生成、再生成
 // 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
 
-constexpr float g_fParticleSpeedX_Normal = METER(5.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(普通)
-constexpr float g_fParticleSpeedX_Strong = METER(8.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(強)
-constexpr float g_fParticleSpeedX_Weak = METER(3.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(弱)
+constexpr float g_fParticleSpeedX_Normal = METER(10.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(普通)
+constexpr float g_fParticleSpeedX_Strong = METER(15.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(強)
+constexpr float g_fParticleSpeedX_Weak = METER(5.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(弱)
 
 constexpr float g_fParticleX_Distance = METER(5.0f); // パーティクル間の X座標距離
 constexpr float g_WaveX_Move = METER(10.0f); // 曲線終点までの距離
@@ -21,6 +21,7 @@ constexpr float g_WaveY_Move_Weak = METER(1.5f); // 制御点の低さ
 WindParticles::WindParticles(float posZ, bool directionRight,float width, int pattern, int strength)
 	: m_pos{ 5.0f, 1.5f, posZ} // ***** 初期位置座標を調整
 	, m_scale{ 0.2f, 0.2f, 0.2f }
+	, m_fSpeed{ 0.0f, 0.0f, 0.0f}
 	, m_fWaveCnt(0.0f) // ベジェ曲線用カウント
 	, m_fStartZ_Pos(posZ)
 	, m_fStartPos{ 0.0f, 0.0f, posZ }
@@ -28,6 +29,7 @@ WindParticles::WindParticles(float posZ, bool directionRight,float width, int pa
 	, m_fPbPos{ 0.0f, 0.0f, posZ }
 	, m_fEndPos{ 0.0f, 0.0f, posZ }
 	, m_fAccelerateWithPlayer(1.0f)
+	, m_fPosChangeBySpeedX(0.0f)
 	, m_bDirectionRight(directionRight)
 	, m_fWindWidth(width)
 	, m_nFrontBackPattern(pattern)
@@ -57,6 +59,13 @@ WindParticles::~WindParticles()
 
 void WindParticles::Update()
 {
+	m_pos[0] += m_fSpeed[0] * m_fAccelerateWithPlayer;
+	m_pos[1] += m_fSpeed[1];
+
+		m_fStartPos[0] += m_fPosChangeBySpeedX;
+		m_fPaPos[0] += m_fPosChangeBySpeedX;
+		m_fPbPos[0] += m_fPosChangeBySpeedX;
+		m_fEndPos[0] += m_fPosChangeBySpeedX;
 	// ベジェ曲線
 	if (m_fWaveCnt >= 1.0f) // 0から1
 	{
@@ -78,9 +87,8 @@ void WindParticles::Update()
 			m_fWaveCnt = 0.0f;
 			m_bReborn = true; // Reborn状態に
 		} // 奥に戻してループ
-#ifdef _DEBUG
-		else m_pos[2] -= g_testZ_Speed * m_fAccelerateWithPlayer; // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~テスト用に奥から手前に Z座標移動
-#endif
+		else m_pos[2] -= m_fSpeed[2];
+			// m_pos[2] -= g_testZ_Speed; // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~テスト用に奥から手前に Z座標移動
 		if (!m_bReborn)
 		{
 			switch (m_nStrength) // 強度で X座標移動速度
@@ -139,6 +147,18 @@ void WindParticles::SetScale(float x, float y, float z)
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+void WindParticles::SetSpeed(float x, float y, float z)
+{
+	m_fSpeed[0] = x;
+	m_fSpeed[1] = y;
+	m_fSpeed[2] = z;
+}
+
+void WindParticles::PosChangeBySpeed(float x, float y, float z)
+{
+	m_fPosChangeBySpeedX = x;
 }
 
 bool WindParticles::bReborn()

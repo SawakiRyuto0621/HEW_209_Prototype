@@ -70,6 +70,12 @@ void Wind::SetScale(float x, float y, float z)
 	m_scale[2] = z;
 }
 
+void Wind::SetSpeed(float x, float y, float z)
+{
+	m_pWindWave->SetSpeed(x, y, z);
+	m_pWindArea->SetSpeed(x, y, z);
+}
+
 bool Wind::GetWindDirectIonRight()
 {
 	return m_bDirectionRight;

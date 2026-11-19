@@ -5,6 +5,7 @@ class WindArea
 private:
 	float m_pos[3];
 	float m_scale[3];
+	float m_fSpeed[3];
 	float m_fAccelerateWithPlayer;
 
 public:
@@ -15,6 +16,7 @@ public:
 
 	void SetPos(float x, float y, float z);
 	void SetScale(float x, float y, float z);
-	void SetAccelerateWithPlayer(float acceleration);
+	void SetAccelerateWithPlayer(float acceleration);	
+	void SetSpeed(float x, float y, float z);
 
 };

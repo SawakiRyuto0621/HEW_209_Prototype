@@ -6,6 +6,8 @@
 Player::Player()
 	:m_pos{0.0f, 0.0f,0.0f}
 	,m_scale{1.0f, 1.0f, 1.0f}
+	, m_fSpeed {0.0f, 0.0f, 0.0f}
+	, m_bKeyPress(false)
 {
 }
 
@@ -19,6 +21,18 @@ void Player::Update()
 	const float speed = METER(5.0f) / FPS;
 	if (IsKeyPress('A')) { m_pos[0] -= speed; }
 	if (IsKeyPress('D')) { m_pos[0] += speed; }
+
+	if (IsKeyPress(VK_LEFT) || IsKeyPress(VK_RIGHT))
+	{
+		if (IsKeyPress(VK_LEFT)) { m_fSpeed.x = speed; }
+		if (IsKeyPress(VK_RIGHT)) { m_fSpeed.x = -speed; }
+		m_bKeyPress = true;
+	}
+	else
+	{
+		m_fSpeed.x = 0;
+		m_bKeyPress = false;
+	}
 }
 
 void Player::Draw()
@@ -58,4 +72,14 @@ void Player::SetScale(float x, float y, float z)
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+bool Player::GetKeyPress()
+{
+	return m_bKeyPress;
+}
+
+DirectX::XMFLOAT3 Player::GetPlayerSpeed()
+{
+	return m_fSpeed;
 }

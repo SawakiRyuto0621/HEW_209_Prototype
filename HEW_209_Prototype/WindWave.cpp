@@ -14,6 +14,7 @@ WindWave::WindWave(float posZ, bool directionRight, float width, int strength)
 	nullptr, nullptr, nullptr}
 	, m_pos{ 0.0f, 0.0f, posZ} // WindÇÃ Zç¿ïWÇ≈èâä˙âª
 	, m_scale{ 1.0f, 1.0f, 1.0f }
+	, m_speed{ 0.0f, 0.0f, 0.0f }
 	, m_bDirectionRight(directionRight)
 	, m_bReborn(false)
 {
@@ -71,6 +72,15 @@ void WindWave::SetScale(float x, float y, float z)
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+void WindWave::SetSpeed(float x, float y, float z)
+{
+	for (int i = 0; i < WindParticlesNum; i++)
+	{
+		m_pWindParticles[i]->SetSpeed(x, y, z);
+		m_pWindParticles[i]->PosChangeBySpeed(x, y, z);
+	}
 }
 
 bool WindWave::bIsReborn()
