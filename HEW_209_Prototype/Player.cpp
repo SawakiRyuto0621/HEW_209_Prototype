@@ -6,8 +6,8 @@
 Player::Player()
 	:m_pos{0.0f, 0.0f,0.0f}
 	,m_scale{1.0f, 1.0f, 1.0f}
-	, m_fSpeed {0.0f, 0.0f, 0.0f}
-	, m_bKeyPress(false)
+	, m_fSpeed {0.0f, 0.0f, 0.0f} // Playerの速度を取得(現在は主にX)
+	, m_bKeyPress(false) // キーを押しているか（今は左右だけ）
 {
 }
 
@@ -22,11 +22,11 @@ void Player::Update()
 	if (IsKeyPress('A')) { m_pos[0] -= speed; }
 	if (IsKeyPress('D')) { m_pos[0] += speed; }
 
-	if (IsKeyPress(VK_LEFT) || IsKeyPress(VK_RIGHT))
+	if (IsKeyPress(VK_LEFT) || IsKeyPress(VK_RIGHT)) // 左右移動でスクロールの速度
 	{
-		if (IsKeyPress(VK_LEFT)) { m_fSpeed.x = speed; }
+		if (IsKeyPress(VK_LEFT)) { m_fSpeed.x = speed; } // 左移動で右にスクロール
 		if (IsKeyPress(VK_RIGHT)) { m_fSpeed.x = -speed; }
-		m_bKeyPress = true;
+		m_bKeyPress = true; // キーを押したフラグ
 	}
 	else
 	{
@@ -74,12 +74,12 @@ void Player::SetScale(float x, float y, float z)
 	m_scale[2] = z;
 }
 
-bool Player::GetKeyPress()
+bool Player::GetKeyPress() // キーを押しているか（今は左右だけ）
 {
 	return m_bKeyPress;
 }
 
-DirectX::XMFLOAT3 Player::GetPlayerSpeed()
+DirectX::XMFLOAT3 Player::GetPlayerSpeed() // Playerの速度を取得(現在は主にX)
 {
 	return m_fSpeed;
 }

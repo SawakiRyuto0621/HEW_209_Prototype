@@ -11,15 +11,15 @@
 
 constexpr float g_fWindWidth = METER(2.0f);
 
-Wind::Wind(bool directionRight, int strength)
+Wind::Wind(float posX, bool directionRight, int strength)
 	: m_pWindWave(nullptr)
-	, m_pos{ 0.0f, 0.0f, 25.0f } // 初期 Z座標を設定
+	, m_pos{ posX, 0.0f, 20.0f } // 初期 Z座標を設定
 	, m_scale{ 1.0f, 1.0f, 1.0f }
 	, m_fWindWidth(g_fWindWidth)
 	, m_bDirectionRight(directionRight)
 {
-	m_pWindWave = new WindWave(m_pos[2], directionRight, m_fWindWidth, strength); // Z座標、向きを渡す
-	m_pWindArea = new WindArea(m_pos[2], m_fWindWidth);
+	m_pWindWave = new WindWave(posX, m_pos[2], directionRight, m_fWindWidth, strength); // Z座標、向きを渡す
+	m_pWindArea = new WindArea(posX, m_pos[2], m_fWindWidth);
 }
 
 Wind::~Wind()
@@ -51,6 +51,11 @@ void Wind::SetPos(float x, float y, float z)
 	m_pos[0] = x;
 	m_pos[1] = y;
 	m_pos[2] = z;
+}
+
+float Wind::GetPosX()
+{
+	return m_pWindArea->GetPosX();
 }
 
 float Wind::GetPosZ()

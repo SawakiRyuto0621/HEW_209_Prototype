@@ -7,6 +7,7 @@
 
 // ********************  開発履歴  ********************
 // 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
+// 2026/11/19  *****  陳  *****  風で Z軸スクロール加速(テスト待ち)
 
 SceneGame::SceneGame()
 	: m_pPlayer(nullptr)
@@ -102,13 +103,13 @@ void SceneGame::Update()
 	m_pPlayer->Update();
 	m_pCamera->Update();
 
-	if (m_pPlayer->GetKeyPress())
+	if (m_pPlayer->GetKeyPress()) // キーを押している間 (今は左右だけ)
 	{
-		DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed();
-		m_pStage->AddSpeedFromPlayer(playerSpeed.x, playerSpeed.y, playerSpeed.z);
+		DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed(); // スクロールの速度を取得
+		m_pStage->AddSpeedFromPlayer(playerSpeed.x, playerSpeed.y, playerSpeed.z); // Stageの速度に加算する
 	}
-	else m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, 0.0f);
-
+	else m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, 0.0f); // 加算停止
+	WindtoPlayer(); // 風で加速の判定
 	m_pStage->Update();
 	for (int i = 0; i < TREE_NUM; ++i) {
 		m_pTree[i]->Update();
@@ -184,30 +185,26 @@ void SceneGame::Draw()
 
 bool SceneGame::bInWind() // Player Z座標が風の範囲内かチェック
 {
-	float WindPosZ = m_pStage->GetWindPosZ();
-	float PlayerPosZ = m_pPlayer->GetPosZ();
-	float WindWidth = m_pStage->GetWindWidth();
-	if (PlayerPosZ <= WindPosZ + WindWidth / 2.0f && PlayerPosZ >= WindPosZ - WindWidth / 2.0f)
+	float WindPosZ = m_pStage->GetWindPosZ(); // 風の中心 Z座標
+	float PlayerPosZ = m_pPlayer->GetPosZ(); // Playerの Z座標
+	float WindWidth = m_pStage->GetWindWidth(); // 風の幅
+	if (PlayerPosZ <= WindPosZ + WindWidth / 2.0f && PlayerPosZ >= WindPosZ - WindWidth / 2.0f) // 風の範囲内
 	{
 		return true;
 	}
 	return false;
 }
 
-void SceneGame::WindtoPlayer()
+void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 {
-	if (!bInWind()) return;
-	if (m_pStage->GetWindDirectionRight()) // 風が右向き
+	if (!bInWind()) return; // 風の範囲外
+	DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed(); // 速度取得 (現在は主にX)
+	if (m_pStage->GetWindDirectionRight() && playerSpeed.x < 0) // 風が右向き、 右にスクロール
 	{
-
+		m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, -0.01f); // 仮の Z加速(手前にスクロール速度)
 	}
-	else // 左向き
+	else if(!m_pStage->GetWindDirectionRight() && playerSpeed.x > 0)// 風が左向き、左にスクロール
 	{
-
+		m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, -0.01f); // 仮の Z加速(手前にスクロール速度)
 	}
-}
-
-void SceneGame::SetSpeedFromPlayer(DirectX::XMFLOAT3 speed)
-{
-	m_pStage->SetSpeed(speed.x, speed.y, speed.z);
 }

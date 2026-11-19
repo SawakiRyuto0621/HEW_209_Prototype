@@ -9,17 +9,18 @@ class Stage
 private:
 	float m_pos[3];
 	float m_scale[3];
-	float m_fSpeed[3];
-	float m_fAddedSpeedFromPlayerX;
-	float m_fAddedSpeedFromPlayerY;
-	float m_fAddedSpeedFromPlayerZ;
-	int m_nStageSpeedRatio; // stageの現在速度 / 最低速度の倍率
 private:
 	int m_nWindStrength; // 風の強度をランダム生成用(０普通、１強、２弱)
 	bool m_bWindDirectionRight; // 風の向きをランダム生成用(true右向き)
 	int m_nPreWindStrength; // 一致の風が２回生成しないための記録
 	bool m_bPreWindDirectionRight; // 一致の風が２回生成しないための記録
 	bool m_bCreateWind; // 一致の風が２回生成しないためのフラグ
+	float m_fSpeed[3];
+	float m_fAddedSpeedFromPlayerX;
+	float m_fAddedSpeedFromPlayerY;
+	float m_fAddedSpeedFromPlayerZ;
+	int m_nStageSpeedRatio; // stageの現在速度 / 最低速度の倍率
+	float m_fWindEndPosX;
 	Wind* m_pWind; // 風
 
 public:

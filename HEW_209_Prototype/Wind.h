@@ -15,12 +15,13 @@ private:
 	WindArea* m_pWindArea;
 
 public:
-	Wind(bool directionRight, int strength); // 右向きか、強度
+	Wind(float posX, bool directionRight, int strength); // 右向きか、強度
 	~Wind();
 	void Update();
 	void Draw();
 
 	void SetPos(float x, float y, float z);
+	float GetPosX();
 	float GetPosZ(); // Z座標
 	float GetWidth();
 	void SetScale(float x, float y, float z);

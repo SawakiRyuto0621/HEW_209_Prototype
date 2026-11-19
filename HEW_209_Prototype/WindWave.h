@@ -1,7 +1,7 @@
 #pragma once
 #include <float.h>
 
-constexpr int WindParticlesNum = 9;
+constexpr int WindParticlesNum = 15;
 
 class WindParticles;
 
@@ -13,10 +13,10 @@ private:
 	float m_speed[3];
 	bool m_bDirectionRight; // 右向きか
 	bool m_bReborn;
-	WindParticles* m_pWindParticles[WindParticlesNum]; // ***** 一旦3つのパーティクルを作成した *****
+	WindParticles* m_pWindParticles[WindParticlesNum]; // ***** パーティクルを作成した *****
 
 public:
-	WindWave(float posZ, bool directionRight, float width, int strength);
+	WindWave(float posX, float posZ, bool directionRight, float width, int strength);
 	~WindWave();
 	void Update();
 	void Draw();

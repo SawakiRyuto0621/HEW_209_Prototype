@@ -8,17 +8,17 @@
 // 2026/11/16  *****  陳  *****  強度指定、ランダムパターンで風の生成、再生成
 // 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
 
-constexpr float g_fParticleSpeedX_Normal = METER(10.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(普通)
-constexpr float g_fParticleSpeedX_Strong = METER(15.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(強)
-constexpr float g_fParticleSpeedX_Weak = METER(5.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(弱)
+constexpr float g_fParticleSpeedX_Normal = METER(12.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(普通)
+constexpr float g_fParticleSpeedX_Strong = METER(18.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(強)
+constexpr float g_fParticleSpeedX_Weak = METER(8.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(弱)
 
 constexpr float g_fParticleX_Distance = METER(5.0f); // パーティクル間の X座標距離
-constexpr float g_WaveX_Move = METER(10.0f); // 曲線終点までの距離
+constexpr float g_WaveX_Move = METER(20.0f / 2); // 曲線終点までの距離
 constexpr float g_WaveY_Move_Normal = METER(3.0f); // 制御点の高さ
 constexpr float g_WaveY_Move_Strong = METER(1.0f); // 制御点の高さ
 constexpr float g_WaveY_Move_Weak = METER(1.5f); // 制御点の低さ
 
-WindParticles::WindParticles(float posZ, bool directionRight,float width, int pattern, int strength)
+WindParticles::WindParticles(float posX, float posZ, bool directionRight,float width, int pattern, int strength)
 	: m_pos{ 5.0f, 1.5f, posZ} // ***** 初期位置座標を調整
 	, m_scale{ 0.2f, 0.2f, 0.2f }
 	, m_fSpeed{ 0.0f, 0.0f, 0.0f}
@@ -36,6 +36,9 @@ WindParticles::WindParticles(float posZ, bool directionRight,float width, int pa
 	, m_nStrength(strength)
 	, m_bReborn(false)
 {
+	if (m_bDirectionRight) m_pos[0] = posX + g_fParticleX_Distance * 2;
+	else m_pos[0] = posX + g_fParticleX_Distance;
+
 	switch(strength) // 強度によるベジェ曲線制御点初期化
 	{
 	case 0:
@@ -62,10 +65,20 @@ void WindParticles::Update()
 	m_pos[0] += m_fSpeed[0] * m_fAccelerateWithPlayer;
 	m_pos[1] += m_fSpeed[1];
 
-		m_fStartPos[0] += m_fPosChangeBySpeedX;
-		m_fPaPos[0] += m_fPosChangeBySpeedX;
-		m_fPbPos[0] += m_fPosChangeBySpeedX;
-		m_fEndPos[0] += m_fPosChangeBySpeedX;
+	if ((m_fStartPos[0] > -g_WaveX_Move && m_fStartPos[0] < g_WaveX_Move) || // 範囲(仮)内なら
+		(m_fEndPos[0] > -g_WaveX_Move || m_fEndPos[0] < g_WaveX_Move))
+	{
+		if ((m_fStartPos[0] + m_fPosChangeBySpeedX > -g_WaveX_Move &&
+			m_fStartPos[0] + m_fPosChangeBySpeedX < g_WaveX_Move) ||
+			m_fEndPos[0] + m_fPosChangeBySpeedX > -g_WaveX_Move &&
+			m_fEndPos[0] + m_fPosChangeBySpeedX < g_WaveX_Move)
+		{
+			m_fStartPos[0] += m_fPosChangeBySpeedX;
+			m_fPaPos[0] += m_fPosChangeBySpeedX;
+			m_fPbPos[0] += m_fPosChangeBySpeedX;
+			m_fEndPos[0] += m_fPosChangeBySpeedX;
+		}
+	}
 	// ベジェ曲線
 	if (m_fWaveCnt >= 1.0f) // 0から1
 	{
@@ -263,49 +276,81 @@ void WindParticles::ParticlesLocation()
 	if (m_bDirectionRight) // -------------------------------------------------------------------------- 右向き
 	{
 		m_fStartPos[0] = m_pos[0] * -1.0f; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2]; // ベジェ曲線の初期位置座標
-		switch (m_nFrontBackPattern) // 9つに分ける
+		switch (m_nFrontBackPattern) // 15個に分ける
 		{
 		case 0: // 真ん中
 			break;
-		case 1: // 真ん中、左
+		case 1: // 真ん中、左1
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
-		case 2: // 真ん中、右
+		case 2: // 真ん中、右1
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
-		case 3: // 奥
+		case 3: // // 真ん中、左2
+			m_pos[0] -= g_fParticleX_Distance * 2;
+			m_fStartPos[0] -= g_fParticleX_Distance * 2;
+			break;
+		case 4: // 真ん中、右2
+			m_pos[0] += g_fParticleX_Distance * 2;
+			m_fStartPos[0] += g_fParticleX_Distance * 2;
+			break;
+		case 5: // 奥
 			m_pos[2] += m_fWindWidth / 2;
 			m_fStartPos[2] += m_fWindWidth / 2;
 			break;
-		case 4: // 奥、左
+		case 6: // 奥、左1
 			m_pos[2] += m_fWindWidth / 2;
 			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
-		case 5: // 奥、右
+		case 7: // 奥、右1
 			m_pos[2] += m_fWindWidth / 2;
 			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
-		case 6: // 手前
+		case 8: // 奥、左2
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance * 2;
+			m_fStartPos[0] -= g_fParticleX_Distance * 2;
+			break;
+		case 9: // 奥、右2
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance * 2;
+			m_fStartPos[0] += g_fParticleX_Distance * 2;
+			break;
+		case 10: // 手前
 			m_pos[2] -= m_fWindWidth / 2;
 			m_fStartPos[2] -= m_fWindWidth / 2;
 			break;
-		case 7: // 手前、左
+		case 11: // 手前、左1
 			m_pos[2] -= m_fWindWidth / 2;
 			m_fStartPos[2] -= m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
-		case 8: // 手前、右
+		case 12: // 手前、右1
 			m_pos[2] -= m_fWindWidth / 2;
 			m_fStartPos[2] -= m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		case 13: // 手前、左2
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance * 2;
+			m_fStartPos[0] -= g_fParticleX_Distance * 2;
+			break;
+		case 14: // 手前、右2
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance * 2;
+			m_fStartPos[0] += g_fParticleX_Distance * 2;
 			break;
 		default:
 			break;
@@ -314,49 +359,81 @@ void WindParticles::ParticlesLocation()
 	else // -------------------------------------------------------------------------- 左向き
 	{
 		m_fStartPos[0] = m_pos[0]; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2];
-		switch (m_nFrontBackPattern) // 9つに分ける
+		switch (m_nFrontBackPattern) // 15個に分ける
 		{
 		case 0: // 真ん中
 			break;
-		case 1: // 真ん中、左
+		case 1: // 真ん中、左1
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
-		case 2: // 真ん中、右
+		case 2: // 真ん中、右1
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
-		case 3: // 奥
+		case 3: // 真ん中、左2
+			m_pos[0] -= g_fParticleX_Distance * 2;
+			m_fStartPos[0] -= g_fParticleX_Distance * 2;
+			break;
+		case 4: // 真ん中、右2
+			m_pos[0] += g_fParticleX_Distance * 2;
+			m_fStartPos[0] += g_fParticleX_Distance * 2;
+			break;
+		case 5: // 奥
 			m_pos[2] += m_fWindWidth / 2;
 			m_fStartPos[2] += m_fWindWidth / 2;
 			break;
-		case 4: // 奥、左
+		case 6: // 奥、左1
 			m_pos[2] += m_fWindWidth / 2;
 			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
-		case 5: // 奥、右
+		case 7: // 奥、右1
 			m_pos[2] += m_fWindWidth / 2;
 			m_fStartPos[2] += m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
 			break;
-		case 6: // 手前
+		case 8: // 奥、左2
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance * 2;
+			m_fStartPos[0] -= g_fParticleX_Distance * 2;
+			break;
+		case 9: // 奥、右2
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance * 2;
+			m_fStartPos[0] += g_fParticleX_Distance * 2;
+			break;
+		case 10: // 手前
 			m_pos[2] -= m_fWindWidth / 2;
 			m_fStartPos[2] -= m_fWindWidth / 2;
 			break;
-		case 7: // 手前、左
+		case 11: // 手前、左1
 			m_pos[2] -= m_fWindWidth / 2;
 			m_fStartPos[2] -= m_fWindWidth / 2;
 			m_pos[0] -= g_fParticleX_Distance;
 			m_fStartPos[0] -= g_fParticleX_Distance;
 			break;
-		case 8: // 手前、右
+		case 12: // 手前、右1
 			m_pos[2] -= m_fWindWidth / 2;
 			m_fStartPos[2] -= m_fWindWidth / 2;
 			m_pos[0] += g_fParticleX_Distance;
 			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		case 13: // 手前、左2
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance * 2;
+			m_fStartPos[0] -= g_fParticleX_Distance * 2;
+			break;
+		case 14: // 手前、右2
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance * 2;
+			m_fStartPos[0] += g_fParticleX_Distance * 2;
 			break;
 		default:
 			break;

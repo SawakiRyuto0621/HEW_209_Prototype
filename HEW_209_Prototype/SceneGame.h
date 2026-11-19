@@ -20,8 +20,7 @@ public:
 	void Update() final;
 	void Draw() final;
 	bool bInWind(); // Player Z座標が風の範囲内かチェック
-	void WindtoPlayer();
-	void SetSpeedFromPlayer(DirectX::XMFLOAT3 speed);
+	void WindtoPlayer(); // 加速で Zスクロールが加速
 
 private:
 	static const int TREE_NUM = 2;	// 木の管理（必要に応じて本数を変更可）
@@ -30,7 +29,7 @@ private:
 	Camera* m_pCamera;
 	Ground* m_pGround; //地面オブジェクト
 	Model* m_pModel;
-	Stage* m_pStage;
+	Stage* m_pStage; // ステージ
 	Tree* m_pTree[TREE_NUM]; //木オブジェクト 複数の木をまとめて管理するための配列
 	Prey* m_pPrey; //獲物
 };
