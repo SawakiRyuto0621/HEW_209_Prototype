@@ -13,7 +13,7 @@ constexpr float g_fWindWidth = METER(2.0f);
 
 Wind::Wind(bool directionRight, int strength)
 	: m_pWindWave(nullptr)
-	, m_pos{ 0.0f, 0.0f, 10.0f } // ‰Šú ZÀ•W‚ğİ’è
+	, m_pos{ 0.0f, 0.0f, 25.0f } // ‰Šú ZÀ•W‚ğİ’è
 	, m_scale{ 1.0f, 1.0f, 1.0f }
 	, m_fWindWidth(g_fWindWidth)
 	, m_bDirectionRight(directionRight)

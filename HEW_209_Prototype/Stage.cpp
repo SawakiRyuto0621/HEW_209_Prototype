@@ -70,12 +70,14 @@ void Stage::Update()
 			SetWindAccelerateWithPlayer();
 		}
 	}
-	else if ((int)(g_testZ_Speed_Ratio / 1.0f) - m_nStageSpeedRatio >= 1) // ******** (現在速度 / 最低速度)を入れる
+	else if ((int)(g_testZ_Speed_Ratio / (METER(5.0f * 1000) / (FPS * 60 * 60)))
+		- m_nStageSpeedRatio >= 1) // ******** (現在速度 / 最低速度)を入れる
 	{ // 現在速度が前の倍率より一倍以上速くなった
 		m_nStageSpeedRatio += (int)(g_testZ_Speed_Ratio - m_nStageSpeedRatio); // ******** 現在速度を入れる // 倍率更新
 		SetWindAccelerateWithPlayer(); // 風の X座標移動速度が stageの Z移動速度と比例する
 	}
-	else if (m_nStageSpeedRatio - (int)(g_testZ_Speed_Ratio / 1.0f) >= 1) // ******** (現在速度 / 最低速度)を入れる
+	else if (m_nStageSpeedRatio - 
+		(int)(g_testZ_Speed_Ratio / (METER(5.0f * 1000) / (FPS * 60 * 60))) >= 1) // ******** (現在速度 / 最低速度)を入れる
 	{// 現在速度が前の倍率より一倍以上遅くなった
 		m_nStageSpeedRatio -= abs((int)(g_testZ_Speed_Ratio - m_nStageSpeedRatio)); // ******** 現在速度を入れる // 倍率更新
 		SetWindAccelerateWithPlayer(); // 風の X座標移動速度が stageの Z移動速度と比例する

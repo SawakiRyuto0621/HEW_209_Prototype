@@ -9,7 +9,7 @@
 // 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
 
 constexpr float g_fParticleSpeedX_Normal = METER(5.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(普通)
-constexpr float g_fParticleSpeedX_Strong = METER(10.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(強)
+constexpr float g_fParticleSpeedX_Strong = METER(8.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(強)
 constexpr float g_fParticleSpeedX_Weak = METER(3.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(弱)
 
 constexpr float g_fParticleX_Distance = METER(5.0f); // パーティクル間の X座標距離
