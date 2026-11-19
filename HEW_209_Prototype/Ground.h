@@ -1,9 +1,12 @@
 #pragma once
+#include "Model.h"
 
 class Ground {
 private:
 	float m_pos[3];    //À•W
 	float m_scale[3];  //Šg‘å—¦
+
+	Model* m_pModel;
 
 public:
 	Ground();

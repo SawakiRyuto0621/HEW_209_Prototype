@@ -1,16 +1,24 @@
 #include "Ground.h"
 //#include <DirectXMath.h>
 #include "Geometory.h"
+#include "ShaderList.h"
 
 Ground::Ground()
 	:m_pos{ 0.0f, 0.0f, 0.0f },
 	m_scale{ 1.0f, 1.0f, 1.0f }
 {
+	m_pModel = new Model();
+	if (!m_pModel->Load("Assets/Model/tileSmall_forest.fbx", 1.0f, Model::None)) {
+		MessageBox(NULL, "tileSmall_forest.fbx", "error", MB_OK);
+	}
 }
 
 Ground::~Ground()
 {
-
+	if (m_pModel) {
+		delete m_pModel;
+		m_pModel = nullptr;
+	}
 }
 
 void Ground::Update()
@@ -32,9 +40,36 @@ void Ground::Draw()
 	DirectX::XMFLOAT4X4 fMat;
 	DirectX::XMStoreFloat4x4(&fMat, mat);
 
+	////描画処理
+	//Geometory::SetWorld(fMat);
+	//Geometory::DrawBox();
 	//描画処理
-	Geometory::SetWorld(fMat);
-	Geometory::DrawBox();
+	if (m_pModel)
+	{
+		// モデルを表示するためのワールド行列を計算 
+
+		ShaderList::SetWorld(fMat);
+
+		// モデルに使用する各種シェーダーを設定 
+		m_pModel->SetVertexShader(ShaderList::GetVS(ShaderList::VS_WORLD));
+		m_pModel->SetPixelShader(ShaderList::GetPS(ShaderList::PS_LAMBERT));
+
+		// メッシュ別にモデルを表示 
+		for (int i = 0; i < m_pModel->GetMeshNum(); ++i)
+		{
+			// モデルのメッシュを取得 
+			const Model::Mesh* mesh = m_pModel->GetMesh(i);
+
+			// メッシュに割り当てられているマテリアルを取得 
+			Model::Material material = *m_pModel->GetMaterial(mesh->materialID);
+
+			// シェーダーへマテリアルを設定 
+			ShaderList::SetMaterial(material);
+
+			// モデルの描画(内部的に一括で行っていた描画処理を、メッシュごとの描画処理に変更) 
+			m_pModel->Draw(i);
+		}
+	}
 
 }
 
