@@ -8,11 +8,11 @@
 // 2026/11/16  *****  陳  *****  強度指定、ランダムパターンで風の生成、再生成
 // 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
 
-WindWave::WindWave(float posX, float posZ, bool directionRight, float width, int strength)
+WindWave::WindWave(float posZ, bool directionRight, float width, int strength)
 	: m_pWindParticles{ nullptr, nullptr, nullptr, nullptr, nullptr, 
 						nullptr, nullptr, nullptr, nullptr, nullptr,
 						nullptr, nullptr, nullptr, nullptr, nullptr, }
-	, m_pos{ posX, 0.0f, posZ} // Windの Z座標で初期化
+	, m_pos{ 0.0f, 0.0f, posZ} // Windの Z座標で初期化
 	, m_scale{ 1.0f, 1.0f, 1.0f }
 	, m_speed{ 0.0f, 0.0f, 0.0f }
 	, m_bDirectionRight(directionRight)
@@ -20,7 +20,7 @@ WindWave::WindWave(float posX, float posZ, bool directionRight, float width, int
 {
 	for (int i = 0; i < WindParticlesNum; ++i)
 	{
-		m_pWindParticles[i] = new WindParticles(posX, posZ, directionRight, width, i, strength); // Z座標を渡す、向き指定、位置前後pattern指定
+		m_pWindParticles[i] = new WindParticles(posZ, directionRight, width, i, strength); // Z座標を渡す、向き指定、位置前後pattern指定
 	}
 }
 
@@ -81,12 +81,4 @@ void WindWave::SetSpeed(float x, float y, float z)
 bool WindWave::bIsReborn()
 {
 	return m_bReborn;
-}
-
-void WindWave::SetAccelerateWithPlayer(float acceleration)
-{
-	for (int i = 0; i < WindParticlesNum; i++)
-	{
-		m_pWindParticles[i]->SetAccelerateWithPlayer(acceleration);
-	}
 }

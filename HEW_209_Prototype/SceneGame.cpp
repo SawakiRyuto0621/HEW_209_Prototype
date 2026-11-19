@@ -101,15 +101,8 @@ void SceneGame::Update()
 {
 	m_pGround->Update();
 	m_pPlayer->Update();
-	m_pCamera->Update();
-
-	if (m_pPlayer->GetKeyPress()) // キーを押している間 (今は左右だけ)
-	{
-		DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed(); // スクロールの速度を取得
-		m_pStage->AddSpeedFromPlayer(playerSpeed.x, playerSpeed.y, playerSpeed.z); // Stageの速度に加算する
-	}
-	else m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, 0.0f); // 加算停止
 	WindtoPlayer(); // 風で加速の判定
+	m_pCamera->Update();
 	m_pStage->Update();
 	for (int i = 0; i < TREE_NUM; ++i) {
 		m_pTree[i]->Update();
@@ -201,10 +194,10 @@ void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 	DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed(); // 速度取得 (現在は主にX)
 	if (m_pStage->GetWindDirectionRight() && playerSpeed.x < 0) // 風が右向き、 右にスクロール
 	{
-		m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, -0.01f); // 仮の Z加速(手前にスクロール速度)
+
 	}
 	else if(!m_pStage->GetWindDirectionRight() && playerSpeed.x > 0)// 風が左向き、左にスクロール
 	{
-		m_pStage->AddSpeedFromPlayer(0.0f, 0.0f, -0.01f); // 仮の Z加速(手前にスクロール速度)
+
 	}
 }

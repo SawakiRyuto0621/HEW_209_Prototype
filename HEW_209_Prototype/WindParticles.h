@@ -21,7 +21,7 @@ private:
 	bool m_bReborn;
 
 public:
-	WindParticles(float posX, float posZ, bool directionRight,float width, int pattern, int strength);
+	WindParticles(float posZ, bool directionRight,float width, int pattern, int strength);
 	~WindParticles();
 	void Update();
 	void Draw();
@@ -34,6 +34,5 @@ public:
 	void ConstructorWindNormal();
 	void ConstructorWindStrong();
 	void ConstructorWindWeak();
-	void SetAccelerateWithPlayer(float acceleration);
 	void ParticlesLocation();
 };

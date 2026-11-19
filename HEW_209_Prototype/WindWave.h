@@ -16,7 +16,7 @@ private:
 	WindParticles* m_pWindParticles[WindParticlesNum]; // ***** パーティクルを作成した *****
 
 public:
-	WindWave(float posX, float posZ, bool directionRight, float width, int strength);
+	WindWave(float posZ, bool directionRight, float width, int strength);
 	~WindWave();
 	void Update();
 	void Draw();
@@ -25,5 +25,4 @@ public:
 	void SetScale(float x, float y, float z);
 	void SetSpeed(float x, float y, float z);
 	bool bIsReborn();
-	void SetAccelerateWithPlayer(float acceleration);
 };

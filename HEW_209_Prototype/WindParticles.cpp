@@ -18,7 +18,7 @@ constexpr float g_WaveY_Move_Normal = METER(3.0f); // 制御点の高さ
 constexpr float g_WaveY_Move_Strong = METER(1.0f); // 制御点の高さ
 constexpr float g_WaveY_Move_Weak = METER(1.5f); // 制御点の低さ
 
-WindParticles::WindParticles(float posX, float posZ, bool directionRight,float width, int pattern, int strength)
+WindParticles::WindParticles(float posZ, bool directionRight,float width, int pattern, int strength)
 	: m_pos{ 5.0f, 1.5f, posZ} // ***** 初期位置座標を調整
 	, m_scale{ 0.2f, 0.2f, 0.2f }
 	, m_fSpeed{ 0.0f, 0.0f, 0.0f}
@@ -36,9 +36,6 @@ WindParticles::WindParticles(float posX, float posZ, bool directionRight,float w
 	, m_nStrength(strength)
 	, m_bReborn(false)
 {
-	if (m_bDirectionRight) m_pos[0] = posX + g_fParticleX_Distance * 2;
-	else m_pos[0] = posX + g_fParticleX_Distance;
-
 	switch(strength) // 強度によるベジェ曲線制御点初期化
 	{
 	case 0:
@@ -264,11 +261,6 @@ void WindParticles::ConstructorWindWeak()
 		m_fEndPos[1] = m_fStartPos[1];
 		m_fEndPos[2] = m_fStartPos[2]; // ベジェ曲線終点
 	}
-}
-
-void WindParticles::SetAccelerateWithPlayer(float acceleration)
-{
-	m_fAccelerateWithPlayer = acceleration;
 }
 
 void WindParticles::ParticlesLocation()

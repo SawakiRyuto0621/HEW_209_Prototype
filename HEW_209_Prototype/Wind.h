@@ -15,7 +15,7 @@ private:
 	WindArea* m_pWindArea;
 
 public:
-	Wind(float posX, bool directionRight, int strength); // 右向きか、強度
+	Wind(bool directionRight, int strength); // 右向きか、強度
 	~Wind();
 	void Update();
 	void Draw();
@@ -28,5 +28,4 @@ public:
 	void SetSpeed(float x, float y, float z);
 	bool GetWindDirectIonRight();
 	bool bIsReborn();
-	void SetAccelerateWithPlayer(float acceleration); // 風の X座標移動速度が stageの Z移動速度と比例する
 };
