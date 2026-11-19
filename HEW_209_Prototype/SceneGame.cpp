@@ -17,8 +17,8 @@ SceneGame::SceneGame()
 	, m_pPrey(nullptr)
 {
 	m_pGround = new Ground;
-	m_pGround->SetPos(0.0f, 0.0f, 0.0f);
-	m_pGround->SetScale(5.0f, 0.4f, 5.0f);
+	m_pGround->SetPos(0.0f, -0.4f, 0.0f);
+	m_pGround->SetScale(5.0f, 0.5f, 5.0f);
 
 	m_pPlayer = new Player();
 	m_pPlayer->SetPos(0.0f, 1.5f, 0.0f);
