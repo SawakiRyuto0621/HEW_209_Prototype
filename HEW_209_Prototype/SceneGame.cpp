@@ -4,6 +4,9 @@
 #include "ShaderList.h"
 #include "Stage.h"
 
+// ********************  開発履歴  ********************
+// 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
+
 SceneGame::SceneGame()
 	: m_pPlayer(nullptr)
 	, m_pCamera(nullptr)
