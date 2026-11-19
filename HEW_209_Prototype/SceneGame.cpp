@@ -13,7 +13,7 @@ SceneGame::SceneGame()
 	, m_pGround(nullptr)
 	, m_pModel(nullptr)
 	, m_pStage(nullptr)
-	, m_pTree(nullptr)
+	//, m_pTree(nullptr)
 	, m_pPrey(nullptr)
 {
 	m_pGround = new Ground;
@@ -29,9 +29,17 @@ SceneGame::SceneGame()
 	m_pStage = new Stage();
 
 	// 木のオブジェクト
-	m_pTree = new Tree();
+	/*m_pTree = new Tree();
 	m_pTree->SetPos(0.0f, 0.0f, 0.0f);
-	m_pTree->SetScale(0.8f, 0.8f, 0.8f);
+	m_pTree->SetScale(0.8f, 0.8f, 0.8f);*/
+	for (int i = 0; i < TREE_NUM; ++i) {
+		m_pTree[i] = nullptr;
+		m_pTree[i] = new Tree();
+		m_pTree[i]->SetScale(0.8f, 0.8f, 0.8f);
+	}
+	// 1本ずつ異なる座標に指定
+	m_pTree[0]->SetPos(1.8f, 0.0f, 1.8f);
+	m_pTree[1]->SetPos(-1.8f, 0.0f, 1.8f);
 
 	// 獲物オブジェクト
 	m_pPrey = new Prey();
@@ -59,9 +67,11 @@ SceneGame::~SceneGame()
 		m_pPrey = nullptr;
 	}
 
-	if (m_pTree){
-		delete m_pTree;
-		m_pTree = nullptr;
+	for (int i = 0; i < TREE_NUM; ++i) {
+		if (m_pTree[i]) {
+			delete m_pTree[i];
+			m_pTree[i] = nullptr;
+		}
 	}
 
 	if (m_pStage) {
@@ -91,7 +101,9 @@ void SceneGame::Update()
 	m_pPlayer->Update();
 	m_pCamera->Update();
 	m_pStage->Update();
-	m_pTree->Update();
+	for (int i = 0; i < TREE_NUM; ++i) {
+		m_pTree[i]->Update();
+	}
 	m_pPrey->Update();
 
 }
@@ -102,10 +114,16 @@ void SceneGame::Draw()
 	Geometory::SetView(m_pCamera->GetViewMatrix());
 	Geometory::SetProjection(m_pCamera->GetProjectionMatrix());
 
+	//仮置き以外にカメラを設定
+	ShaderList::SetView(m_pCamera->GetViewMatrix());
+	ShaderList::SetProjection(m_pCamera->GetProjectionMatrix());
+
 	m_pGround->Draw();
 	m_pPlayer->Draw();
 	m_pStage->Draw();
-	m_pTree->Draw();
+	for (int i = 0; i < TREE_NUM; ++i) {
+		m_pTree[i]->Draw();
+	}
 	m_pPrey->Draw();
 
 	/*

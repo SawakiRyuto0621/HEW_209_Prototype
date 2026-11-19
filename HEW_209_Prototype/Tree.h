@@ -1,7 +1,6 @@
 //–Ø
 #pragma once
 #include "Model.h"
-#include "Camera.h"
 
 class Tree
 {
@@ -10,7 +9,6 @@ private:
 	float m_scale[3];
 
 	Model* m_pModel;
-	Camera* m_pCamera;
 
 public:
 	Tree();
