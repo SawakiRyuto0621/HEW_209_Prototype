@@ -99,6 +99,10 @@ void SceneGame::Draw()
 	Geometory::SetView(m_pCamera->GetViewMatrix());
 	Geometory::SetProjection(m_pCamera->GetProjectionMatrix());
 
+	//‰¼’u‚«ˆÈŠO‚ÉƒJƒƒ‰‚ðÝ’è
+	ShaderList::SetView(m_pCamera->GetViewMatrix());
+	ShaderList::SetProjection(m_pCamera->GetProjectionMatrix());
+
 	m_pGround->Draw();
 	m_pPlayer->Draw();
 	m_pStage->Draw();

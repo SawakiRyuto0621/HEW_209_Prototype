@@ -117,6 +117,9 @@
     <ClCompile Include="Prey.cpp">
       <Filter>ソース ファイル\Work</Filter>
     </ClCompile>
+    <ClCompile Include="TreeCollision.cpp">
+      <Filter>ソース ファイル\Work</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h">
@@ -192,6 +195,9 @@
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
     <ClInclude Include="Prey.h">
+      <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeCollision.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
