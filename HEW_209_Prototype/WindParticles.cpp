@@ -2,19 +2,21 @@
 #include "Geometory.h"
 #include "Defines.h"
 
+// ********************  開発履歴  ********************
+// 2026/11/14  *****  陳  *****  クラス作成
+// 2026/11/15  *****  陳  *****  風（パーティクル）が指定の向きに曲線移動
+// 2026/11/16  *****  陳  *****  強度指定、ランダムパターンで風の生成、再生成
+// 2026/11/17  *****  陳  *****  風の X座標移動速度が stageの移動速度に比例する
+
 constexpr float g_fParticleSpeedX_Normal = METER(5.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(普通)
 constexpr float g_fParticleSpeedX_Strong = METER(10.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(強)
 constexpr float g_fParticleSpeedX_Weak = METER(3.0f) / FPS; // ****** 一旦x座標移動速度の設定(1フレイムの移動量)(弱)
 
-constexpr float g_fParticleX_Distance = METER(5.0f);
-constexpr float g_WaveX_Move = METER(10.0f);
-constexpr float g_WaveY_Move_Normal = METER(3.0f); // 制御点の高さ->最高点約0.7m
-constexpr float g_WaveY_Move_Strong = METER(1.0f); // 制御点の高さ->最高点約0.3m
-constexpr float g_WaveY_Move_Weak = METER(1.5f); // 制御点の低さ->最低点約1.1m
-
-#ifdef _DEBUG
-constexpr float g_testZ_Speed = METER(0.02f);
-#endif
+constexpr float g_fParticleX_Distance = METER(5.0f); // パーティクル間の X座標距離
+constexpr float g_WaveX_Move = METER(10.0f); // 曲線終点までの距離
+constexpr float g_WaveY_Move_Normal = METER(3.0f); // 制御点の高さ
+constexpr float g_WaveY_Move_Strong = METER(1.0f); // 制御点の高さ
+constexpr float g_WaveY_Move_Weak = METER(1.5f); // 制御点の低さ
 
 WindParticles::WindParticles(float posZ, bool directionRight,float width, int pattern, int strength)
 	: m_pos{ 5.0f, 1.5f, posZ} // ***** 初期位置座標を調整
@@ -25,6 +27,7 @@ WindParticles::WindParticles(float posZ, bool directionRight,float width, int pa
 	, m_fPaPos{ 0.0f, 0.0f, posZ }
 	, m_fPbPos{ 0.0f, 0.0f, posZ }
 	, m_fEndPos{ 0.0f, 0.0f, posZ }
+	, m_fAccelerateWithPlayer(1.0f)
 	, m_bDirectionRight(directionRight)
 	, m_fWindWidth(width)
 	, m_nFrontBackPattern(pattern)
@@ -69,27 +72,33 @@ void WindParticles::Update()
 			+ m_fPaPos[1] * (1.0f - m_fWaveCnt) * (1.0f - m_fWaveCnt) * (3.0f * m_fWaveCnt)
 			+ m_fPbPos[1] * (1.0f - m_fWaveCnt) * 3.0f * m_fWaveCnt * m_fWaveCnt
 			+ m_fEndPos[1] * m_fWaveCnt * m_fWaveCnt * m_fWaveCnt; // y座標移動
-		if (m_pos[2] < -6.0f) // カメラが映らないまで近く
+		if (m_pos[2] < METER(- 4.0f) - m_fWindWidth) // カメラが映らないまで近く
 		{
 			m_pos[2] = m_fStartZ_Pos; // Z座標 reset
 			m_fWaveCnt = 0.0f;
 			m_bReborn = true; // Reborn状態に
 		} // 奥に戻してループ
 #ifdef _DEBUG
-		else m_pos[2] -= g_testZ_Speed; // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~テスト用に奥から手前に Z座標移動
+		else m_pos[2] -= g_testZ_Speed * m_fAccelerateWithPlayer; // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~テスト用に奥から手前に Z座標移動
 #endif
 		if (!m_bReborn)
 		{
 			switch (m_nStrength) // 強度で X座標移動速度
 			{
 			case 0:
-				m_fWaveCnt += 1.0f / (g_WaveX_Move / g_fParticleSpeedX_Normal); // 1 / (g_WaveX_Moveまで必須のフレイム数)
+				m_fWaveCnt += 1.0f / (g_WaveX_Move / 
+					(g_fParticleSpeedX_Normal * m_fAccelerateWithPlayer)); 
+				// 1 / (g_WaveX_Moveまで必須のフレイム数)
 				break;
 			case 1:
-				m_fWaveCnt += 1.0f / (g_WaveX_Move / g_fParticleSpeedX_Strong); // 1 / (g_WaveX_Moveまで必須のフレイム数)
+				m_fWaveCnt += 1.0f / (g_WaveX_Move /
+					(g_fParticleSpeedX_Strong * m_fAccelerateWithPlayer)); 
+				// 1 / (g_WaveX_Moveまで必須のフレイム数)
 				break;
 			case 2:
-				m_fWaveCnt += 1.0f / (g_WaveX_Move / g_fParticleSpeedX_Weak); // 1 / (g_WaveX_Moveまで必須のフレイム数)
+				m_fWaveCnt += 1.0f / (g_WaveX_Move /
+					(g_fParticleSpeedX_Weak * m_fAccelerateWithPlayer)); 
+				// 1 / (g_WaveX_Moveまで必須のフレイム数)
 				break;
 			default:
 				break;
@@ -137,35 +146,11 @@ bool WindParticles::bReborn()
 	return m_bReborn;
 }
 
-void WindParticles::SetReborn(bool b)
-{
-	m_bReborn = b;
-}
-
 void WindParticles::ConstructorWindNormal() // 強度：普通
 {
+	ParticlesLocation();
 	if (m_bDirectionRight) // -------------------------------------------------------------------------- 右向き
 	{
-		m_fStartPos[0] = m_pos[0] * -1.0f; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2]; // ベジェ曲線の初期位置座標
-		switch (m_nFrontBackPattern) // 3つに分ける
-		{
-		case 0: // 真ん中
-			break;
-		case 1: // 奥
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] -= g_fParticleX_Distance;
-			m_fStartPos[0] -= g_fParticleX_Distance;
-			break;
-		case 2: // 手前
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] += g_fParticleX_Distance;
-			m_fStartPos[0] += g_fParticleX_Distance;
-			break;
-		default:
-			break;
-		}
 		m_fPaPos[0] = m_fStartPos[0] + g_WaveX_Move * 0.9f;
 		m_fPaPos[1] = m_fStartPos[1] + g_WaveY_Move_Normal;
 		m_fPaPos[2] = m_fStartPos[2]; // ベジェ曲線制御点 Pa
@@ -178,26 +163,6 @@ void WindParticles::ConstructorWindNormal() // 強度：普通
 	}
 	else // ---------------------------------------------------------------------------------------- 左向き
 	{
-		m_fStartPos[0] = m_pos[0]; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2];
-		switch (m_nFrontBackPattern) // 3つに分ける
-		{
-		case 0: // 真ん中
-			break;
-		case 1: // 奥
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] -= g_fParticleX_Distance;
-			m_fStartPos[0] -= g_fParticleX_Distance;
-			break;
-		case 2: // 手前
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] += g_fParticleX_Distance;
-			m_fStartPos[0] += g_fParticleX_Distance;
-			break;
-		default:
-			break;
-		}
 		m_fPaPos[0] = m_fStartPos[0] - g_WaveX_Move * 0.9f;
 		m_fPaPos[1] = m_fStartPos[1] + g_WaveY_Move_Normal;
 		m_fPaPos[2] = m_fStartPos[2]; // ベジェ曲線制御点 Pa
@@ -212,28 +177,9 @@ void WindParticles::ConstructorWindNormal() // 強度：普通
 
 void WindParticles::ConstructorWindStrong() // 強度：強
 {
+	ParticlesLocation();
 	if (m_bDirectionRight) // -------------------------------------------------------------------------- 右向き
 	{
-		m_fStartPos[0] = m_pos[0] * -1.0f; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2]; // ベジェ曲線の初期位置座標
-		switch (m_nFrontBackPattern) // 3つに分ける
-		{
-		case 0: // 真ん中
-			break;
-		case 1: // 奥
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] -= g_fParticleX_Distance;
-			m_fStartPos[0] -= g_fParticleX_Distance;
-			break;
-		case 2: // 手前
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] += g_fParticleX_Distance;
-			m_fStartPos[0] += g_fParticleX_Distance;
-			break;
-		default:
-			break;
-		}
 		m_fPaPos[0] = m_fStartPos[0] + g_WaveX_Move * 1.0f;
 		m_fPaPos[1] = m_fStartPos[1] + g_WaveY_Move_Strong;
 		m_fPaPos[2] = m_fStartPos[2]; // ベジェ曲線制御点 Pa
@@ -246,26 +192,6 @@ void WindParticles::ConstructorWindStrong() // 強度：強
 	}
 	else // ---------------------------------------------------------------------------------------- 左向き
 	{
-		m_fStartPos[0] = m_pos[0]; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2];
-		switch (m_nFrontBackPattern) // 3つに分ける
-		{
-		case 0: // 真ん中
-			break;
-		case 1: // 奥
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] -= g_fParticleX_Distance;
-			m_fStartPos[0] -= g_fParticleX_Distance;
-			break;
-		case 2: // 手前
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] += g_fParticleX_Distance;
-			m_fStartPos[0] += g_fParticleX_Distance;
-			break;
-		default:
-			break;
-		}
 		m_fPaPos[0] = m_fStartPos[0] - g_WaveX_Move * 1.0f;
 		m_fPaPos[1] = m_fStartPos[1] + g_WaveY_Move_Strong;
 		m_fPaPos[2] = m_fStartPos[2]; // ベジェ曲線制御点 Pa
@@ -280,28 +206,9 @@ void WindParticles::ConstructorWindStrong() // 強度：強
 
 void WindParticles::ConstructorWindWeak()
 {
+	ParticlesLocation();
 	if (m_bDirectionRight) // -------------------------------------------------------------------------- 右向き
 	{
-		m_fStartPos[0] = m_pos[0] * -1.0f; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2]; // ベジェ曲線の初期位置座標
-		switch (m_nFrontBackPattern) // 3つに分ける
-		{
-		case 0: // 真ん中
-			break;
-		case 1: // 奥
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] -= g_fParticleX_Distance;
-			m_fStartPos[0] -= g_fParticleX_Distance;
-			break;
-		case 2: // 手前
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] += g_fParticleX_Distance;
-			m_fStartPos[0] += g_fParticleX_Distance;
-			break;
-		default:
-			break;
-		}
 		m_fPaPos[0] = m_fStartPos[0] + g_WaveX_Move * 0.4f;
 		m_fPaPos[1] = m_fStartPos[1] - g_WaveY_Move_Weak;
 		m_fPaPos[2] = m_fStartPos[2]; // ベジェ曲線制御点 Pa
@@ -314,26 +221,6 @@ void WindParticles::ConstructorWindWeak()
 	}
 	else // ---------------------------------------------------------------------------------------- 左向き
 	{
-		m_fStartPos[0] = m_pos[0]; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2];
-		switch (m_nFrontBackPattern) // 3つに分ける
-		{
-		case 0: // 真ん中
-			break;
-		case 1: // 奥
-			m_pos[2] += m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] -= g_fParticleX_Distance;
-			m_fStartPos[0] -= g_fParticleX_Distance;
-			break;
-		case 2: // 手前
-			m_pos[2] -= m_fWindWidth;
-			m_fStartPos[2] += m_fWindWidth;
-			m_pos[0] += g_fParticleX_Distance;
-			m_fStartPos[0] += g_fParticleX_Distance;
-			break;
-		default:
-			break;
-		}
 		m_fPaPos[0] = m_fStartPos[0] - g_WaveX_Move * 0.4f;
 		m_fPaPos[1] = m_fStartPos[1] - g_WaveY_Move_Weak;
 		m_fPaPos[2] = m_fStartPos[2]; // ベジェ曲線制御点 Pa
@@ -343,6 +230,117 @@ void WindParticles::ConstructorWindWeak()
 		m_fEndPos[0] = m_fStartPos[0] - g_WaveX_Move;
 		m_fEndPos[1] = m_fStartPos[1];
 		m_fEndPos[2] = m_fStartPos[2]; // ベジェ曲線終点
+	}
+}
+
+void WindParticles::SetAccelerateWithPlayer(float acceleration)
+{
+	m_fAccelerateWithPlayer = acceleration;
+}
+
+void WindParticles::ParticlesLocation()
+{
+	if (m_bDirectionRight) // -------------------------------------------------------------------------- 右向き
+	{
+		m_fStartPos[0] = m_pos[0] * -1.0f; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2]; // ベジェ曲線の初期位置座標
+		switch (m_nFrontBackPattern) // 9つに分ける
+		{
+		case 0: // 真ん中
+			break;
+		case 1: // 真ん中、左
+			m_pos[0] -= g_fParticleX_Distance;
+			m_fStartPos[0] -= g_fParticleX_Distance;
+			break;
+		case 2: // 真ん中、右
+			m_pos[0] += g_fParticleX_Distance;
+			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		case 3: // 奥
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			break;
+		case 4: // 奥、左
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance;
+			m_fStartPos[0] -= g_fParticleX_Distance;
+			break;
+		case 5: // 奥、右
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance;
+			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		case 6: // 手前
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			break;
+		case 7: // 手前、左
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance;
+			m_fStartPos[0] -= g_fParticleX_Distance;
+			break;
+		case 8: // 手前、右
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance;
+			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		default:
+			break;
+		}
+	}
+	else // -------------------------------------------------------------------------- 左向き
+	{
+		m_fStartPos[0] = m_pos[0]; m_fStartPos[1] = m_pos[1]; m_fStartPos[2] = m_pos[2];
+		switch (m_nFrontBackPattern) // 9つに分ける
+		{
+		case 0: // 真ん中
+			break;
+		case 1: // 真ん中、左
+			m_pos[0] -= g_fParticleX_Distance;
+			m_fStartPos[0] -= g_fParticleX_Distance;
+			break;
+		case 2: // 真ん中、右
+			m_pos[0] += g_fParticleX_Distance;
+			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		case 3: // 奥
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			break;
+		case 4: // 奥、左
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance;
+			m_fStartPos[0] -= g_fParticleX_Distance;
+			break;
+		case 5: // 奥、右
+			m_pos[2] += m_fWindWidth / 2;
+			m_fStartPos[2] += m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance;
+			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		case 6: // 手前
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			break;
+		case 7: // 手前、左
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] -= g_fParticleX_Distance;
+			m_fStartPos[0] -= g_fParticleX_Distance;
+			break;
+		case 8: // 手前、右
+			m_pos[2] -= m_fWindWidth / 2;
+			m_fStartPos[2] -= m_fWindWidth / 2;
+			m_pos[0] += g_fParticleX_Distance;
+			m_fStartPos[0] += g_fParticleX_Distance;
+			break;
+		default:
+			break;
+		}
 	}
 }
 
