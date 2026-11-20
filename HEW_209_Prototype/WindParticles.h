@@ -22,7 +22,7 @@ private:
 
 public:
 	WindParticles(float posZ, bool directionRight,float width,
-		int pattern, int strength, float speedZ);
+		int pattern, int strength);
 	~WindParticles();
 	void Update();
 	void Draw();
