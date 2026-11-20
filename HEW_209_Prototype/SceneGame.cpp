@@ -3,9 +3,16 @@
 #include "Geometory.h"
 #include "ShaderList.h"
 #include "Stage.h"
+#include "DirectXMath.h"
+#include "CameraPlayer.h"
+#include "Defines.h"
 
 // ********************  開発履歴  ********************
 // 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
+// 2026/11/19  *****  陳  *****  風で Z軸スクロール加速(テスト待ち)
+
+constexpr float AddSpeedWind = METER(500.0f) / (FPS * 60 * 60);
+constexpr float DevideSpeedWind = METER(-500.0f) / (FPS * 60 * 60);
 
 SceneGame::SceneGame()
 	: m_pPlayer(nullptr)
@@ -20,11 +27,17 @@ SceneGame::SceneGame()
 	m_pGround->SetPos(0.0f, -0.4f, 0.0f);
 	m_pGround->SetScale(5.0f, 0.5f, 5.0f);
 
+	m_pCamera = new CameraDebug();
+	CameraPlayer* pCamera = new CameraPlayer();
+
 	m_pPlayer = new Player();
 	m_pPlayer->SetPos(0.0f, 1.5f, 0.0f);
 	m_pPlayer->SetScale(1.5f, 0.25f, 0.5f);
 
-	m_pCamera = new CameraDebug();
+	// カメラにプレイヤーを設定（プレイヤーの作成後に呼び出し） 
+	pCamera->SetPlayer(m_pPlayer);
+	// カメラの情報をメンバー変数に記録 
+	m_pCamera = pCamera; // Camera クラスに格納するためCameraPlayerクラスではなくなる 
 
 	m_pStage = new Stage();
 
@@ -99,6 +112,7 @@ void SceneGame::Update()
 {
 	m_pGround->Update();
 	m_pPlayer->Update();
+	WindtoPlayer(); // 風で加速の判定
 	m_pCamera->Update();
 	m_pStage->Update();
 	for (int i = 0; i < TREE_NUM; ++i) {
@@ -175,25 +189,89 @@ void SceneGame::Draw()
 
 bool SceneGame::bInWind() // Player Z座標が風の範囲内かチェック
 {
-	float WindPosZ = m_pStage->GetWindPosZ();
-	float PlayerPosZ = m_pPlayer->GetPosZ();
-	float WindWidth = m_pStage->GetWindWidth();
-	if (PlayerPosZ <= WindPosZ + WindWidth / 2.0f && PlayerPosZ >= WindPosZ - WindWidth / 2.0f)
+	float WindPosZ = m_pStage->GetWindPosZ(); // 風の中心 Z座標
+	float PlayerPosZ = m_pPlayer->GetPosZ(); // Playerの Z座標
+	float WindWidth = m_pStage->GetWindWidth(); // 風の幅
+	if (PlayerPosZ <= WindPosZ + WindWidth / 2.0f && PlayerPosZ >= WindPosZ - WindWidth / 2.0f) // 風の範囲内
 	{
 		return true;
 	}
 	return false;
 }
 
-void SceneGame::WindtoPlayer()
+void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 {
-	if (!bInWind()) return;
+	if (!bInWind()) return; // 風の範囲外
+	if (!m_pPlayer->GetKeyPress()) return; // キーを押していない
+	DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed(); // 速度取得 (現在は主にX)
 	if (m_pStage->GetWindDirectionRight()) // 風が右向き
 	{
-
+		if (playerSpeed.x > 0) // 右旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
+				break;
+			}
+		}
+		else // 左旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
+				break;
+			}
+		}
 	}
-	else // 左向き
+	else if(!m_pStage->GetWindDirectionRight())// 風が左向き
 	{
-
+		if (playerSpeed.x < 0) // 左旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
+				break;
+			}
+		}
+		if (playerSpeed.x > 0) // 右旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
+				break;
+			}
+		}
 	}
 }

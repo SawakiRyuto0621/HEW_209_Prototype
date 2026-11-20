@@ -11,6 +11,7 @@ constexpr float g_fAreaLength = METER(20.0f);
 WindArea::WindArea(float posZ, float width)
 	: m_pos{ 0.0f, 0.0f, posZ }
 	, m_scale{ g_fAreaLength, 0.1f, width }
+	, m_fSpeed{ 0.0f, 0.0f, 0.0f }
 	, m_fAccelerateWithPlayer(1.0f)
 {
 }
@@ -21,7 +22,14 @@ WindArea::~WindArea()
 
 void WindArea::Update()
 {
-	m_pos[2] -= g_testZ_Speed * m_fAccelerateWithPlayer;
+	if (m_pos[0] > -g_fAreaLength / 3 && m_pos[0] < g_fAreaLength / 3)
+	{
+		if(m_pos[0] + m_fSpeed[0] > -g_fAreaLength / 3 &&
+			m_pos[0] + m_fSpeed[0] < g_fAreaLength / 3)
+		m_pos[0] += m_fSpeed[0];
+	}
+
+	m_pos[1] += m_fSpeed[1]; m_pos[2] -= m_fSpeed[2];
 }
 
 void WindArea::Draw()
@@ -47,11 +55,22 @@ void WindArea::SetPos(float x, float y, float z)
 {
 }
 
+float WindArea::GetPosX()
+{
+	return m_pos[0];
+}
+
+float WindArea::GetPosZ()
+{
+	return m_pos[2];
+}
+
 void WindArea::SetScale(float x, float y, float z)
 {
 }
-
-void WindArea::SetAccelerateWithPlayer(float acceleration)
+void WindArea::SetSpeed(float x, float y, float z)
 {
-	m_fAccelerateWithPlayer = acceleration;
+	m_fSpeed[0] = x;
+	m_fSpeed[1] = y;
+	m_fSpeed[2] = z;
 }
