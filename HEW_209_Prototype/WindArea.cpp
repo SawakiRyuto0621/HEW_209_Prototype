@@ -8,10 +8,10 @@
 
 constexpr float g_fAreaLength = METER(20.0f);
 
-WindArea::WindArea(float posZ, float width, float speedZ)
+WindArea::WindArea(float posZ, float width)
 	: m_pos{ 0.0f, 0.0f, posZ }
 	, m_scale{ g_fAreaLength, 0.1f, width }
-	, m_fSpeed{ 0.0f, 0.0f, speedZ }
+	, m_fSpeed{ 0.0f, 0.0f, 0.0f }
 	, m_fAccelerateWithPlayer(1.0f)
 {
 }

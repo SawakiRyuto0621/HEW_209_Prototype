@@ -11,8 +11,8 @@
 // 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
 // 2026/11/19  *****  陳  *****  風で Z軸スクロール加速(テスト待ち)
 
-constexpr float AddSpeedWind = 100.0f;
-constexpr float DevideSpeedWind = -100.0f;
+constexpr float AddSpeedWind = METER(500.0f) / (FPS * 60 * 60);
+constexpr float DevideSpeedWind = METER(-500.0f) / (FPS * 60 * 60);
 
 SceneGame::SceneGame()
 	: m_pPlayer(nullptr)
@@ -212,13 +212,13 @@ void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 			switch (windStrength)
 			{
 			case 0:
-				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
 				break;
 			case 1:
-				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
 				break;
 			case 2:
-				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
 				break;
 			}
 		}
@@ -228,13 +228,13 @@ void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 			switch (windStrength)
 			{
 			case 0:
-				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
 				break;
 			case 1:
-				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
 				break;
 			case 2:
-				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
 				break;
 			}
 		}
@@ -247,13 +247,13 @@ void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 			switch (windStrength)
 			{
 			case 0:
-				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
 				break;
 			case 1:
-				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
 				break;
 			case 2:
-				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind);
 				break;
 			}
 		}
@@ -263,13 +263,13 @@ void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 			switch (windStrength)
 			{
 			case 0:
-				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
 				break;
 			case 1:
-				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
 				break;
 			case 2:
-				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind);
 				break;
 			}
 		}

@@ -30,7 +30,7 @@ Stage::Stage()
 	m_bWindDirectionRight = rand() % 2 == 0; // 0か1
 	m_nWindStrength = rand() % 3; // 0か1か2
 	// 風
-	m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength, m_fSpeed[2]); // true右向き, false左 // 0普通1強2弱
+	m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength); // true右向き, false左 // 0普通1強2弱
 }
 
 Stage::~Stage()
@@ -70,7 +70,7 @@ void Stage::Update()
 				}
 			}
 			m_bCreateWind = false; // フラグを戻す
-			m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength, m_fSpeed[2]); // 再生成
+			m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength); // 再生成
 		}
 	}
 	else 
@@ -102,11 +102,13 @@ void Stage::SetSpeed(float x, float y, float z)
 	m_fSpeed[0] = x;
 	m_fSpeed[1] = y;
 	m_fSpeed[2] = z;
+	m_pWind->SetSpeed(x, y, z);
 }
 
 void Stage::AddSpeed(float x, float y, float z)
 {
-	if (m_fSpeed[2] - z >= METER(20.0f * 1000) / (FPS * 60 * 60))
+	float minSpeed = METER(20.0f * 1000) / (FPS * 60 * 60);
+	if (m_fSpeed[2] + z * 2 >= minSpeed)
 	{
 /*		m_fAddedSpeed[0] = x; */m_fSpeed[0] += x;
 /*		m_fAddedSpeed[1] = y; */m_fSpeed[1] += y;

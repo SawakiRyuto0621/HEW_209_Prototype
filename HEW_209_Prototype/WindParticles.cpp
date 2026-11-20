@@ -19,10 +19,10 @@ constexpr float g_WaveY_Move_Strong = METER(1.0f); // 制御点の高さ
 constexpr float g_WaveY_Move_Weak = METER(1.5f); // 制御点の低さ
 
 WindParticles::WindParticles(float posZ, bool directionRight,float width,
-	int pattern, int strength, float speedZ)
+	int pattern, int strength)
 	: m_pos{ 5.0f, 1.5f, posZ} // ***** 初期位置座標を調整
 	, m_scale{ 0.2f, 0.2f, 0.2f }
-	, m_fSpeed{ 0.0f, 0.0f, speedZ}
+	, m_fSpeed{ 0.0f, 0.0f, 0.0f}
 	, m_fWaveCnt(0.0f) // ベジェ曲線用カウント
 	, m_fStartZ_Pos(posZ)
 	, m_fStartPos{ 0.0f, 0.0f, posZ }

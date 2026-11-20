@@ -9,7 +9,7 @@ private:
 	float m_fAccelerateWithPlayer;
 
 public:
-	WindArea(float posZ, float width, float speedZ);
+	WindArea(float posZ, float width);
 	~WindArea();
 	void Update();
 	void Draw();
