@@ -11,15 +11,15 @@
 
 constexpr float g_fWindWidth = METER(3.0f);  // 風の幅
 
-Wind::Wind(bool directionRight, int strength)
+Wind::Wind(bool directionRight, int strength, float speedZ)
 	: m_pWindWave(nullptr)
 	, m_pos{ 0.0f, 0.0f, 20.0f } // 初期 Z座標を設定
 	, m_scale{ 1.0f, 1.0f, 1.0f }
 	, m_fWindWidth(g_fWindWidth)
 	, m_bDirectionRight(directionRight)
 {
-	m_pWindWave = new WindWave(m_pos[2], directionRight, m_fWindWidth, strength); // Z座標、向きを渡す
-	m_pWindArea = new WindArea(m_pos[2], m_fWindWidth);
+	m_pWindWave = new WindWave(m_pos[2], directionRight, m_fWindWidth, strength, speedZ); // Z座標、向きを渡す
+	m_pWindArea = new WindArea(m_pos[2], m_fWindWidth, speedZ);
 }
 
 Wind::~Wind()
@@ -38,6 +38,7 @@ void Wind::Update()
 {
 	m_pWindWave->Update();
 	m_pWindArea->Update();
+	m_pos[2] = m_pWindArea->GetPosZ();
 }
 
 void Wind::Draw()

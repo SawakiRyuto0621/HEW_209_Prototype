@@ -18,9 +18,10 @@ public:
 	void Draw();
 
 	void SetPos(float x, float y, float z);
+	DirectX::XMFLOAT3 GetPos();
 	float GetPosZ();
 	void SetScale(float x, float y, float z);
-	bool GetKeyPress(); // キーを押しているか（今は左右だけ）
+	bool GetKeyPress();
 	DirectX::XMFLOAT3 GetPlayerSpeed(); // Playerの速度を取得(現在は主にX)
 	
 };

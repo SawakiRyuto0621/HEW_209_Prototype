@@ -4,10 +4,15 @@
 #include "ShaderList.h"
 #include "Stage.h"
 #include "DirectXMath.h"
+#include "CameraPlayer.h"
+#include "Defines.h"
 
 // ********************  開発履歴  ********************
 // 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
 // 2026/11/19  *****  陳  *****  風で Z軸スクロール加速(テスト待ち)
+
+constexpr float AddSpeedWind = 100.0f;
+constexpr float DevideSpeedWind = -100.0f;
 
 SceneGame::SceneGame()
 	: m_pPlayer(nullptr)
@@ -22,11 +27,17 @@ SceneGame::SceneGame()
 	m_pGround->SetPos(0.0f, -0.4f, 0.0f);
 	m_pGround->SetScale(5.0f, 0.5f, 5.0f);
 
+	m_pCamera = new CameraDebug();
+	CameraPlayer* pCamera = new CameraPlayer();
+
 	m_pPlayer = new Player();
 	m_pPlayer->SetPos(0.0f, 1.5f, 0.0f);
 	m_pPlayer->SetScale(1.5f, 0.25f, 0.5f);
 
-	m_pCamera = new CameraDebug();
+	// カメラにプレイヤーを設定（プレイヤーの作成後に呼び出し） 
+	pCamera->SetPlayer(m_pPlayer);
+	// カメラの情報をメンバー変数に記録 
+	m_pCamera = pCamera; // Camera クラスに格納するためCameraPlayerクラスではなくなる 
 
 	m_pStage = new Stage();
 
@@ -191,13 +202,76 @@ bool SceneGame::bInWind() // Player Z座標が風の範囲内かチェック
 void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 {
 	if (!bInWind()) return; // 風の範囲外
+	if (!m_pPlayer->GetKeyPress()) return; // キーを押していない
 	DirectX::XMFLOAT3 playerSpeed = m_pPlayer->GetPlayerSpeed(); // 速度取得 (現在は主にX)
-	if (m_pStage->GetWindDirectionRight() && playerSpeed.x < 0) // 風が右向き、 右にスクロール
+	if (m_pStage->GetWindDirectionRight()) // 風が右向き
 	{
-
+		if (playerSpeed.x > 0) // 右旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				break;
+			}
+		}
+		else // 左旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				break;
+			}
+		}
 	}
-	else if(!m_pStage->GetWindDirectionRight() && playerSpeed.x > 0)// 風が左向き、左にスクロール
+	else if(!m_pStage->GetWindDirectionRight())// 風が左向き
 	{
-
+		if (playerSpeed.x < 0) // 左旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, AddSpeedWind / FPS);
+				break;
+			}
+		}
+		if (playerSpeed.x > 0) // 右旋回
+		{
+			int windStrength = m_pStage->GetWindStrength();
+			switch (windStrength)
+			{
+			case 0:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				break;
+			case 1:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				break;
+			case 2:
+				m_pStage->AddSpeed(0.0f, 0.0f, DevideSpeedWind / FPS);
+				break;
+			}
+		}
 	}
 }

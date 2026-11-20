@@ -21,7 +21,8 @@ private:
 	bool m_bReborn;
 
 public:
-	WindParticles(float posZ, bool directionRight,float width, int pattern, int strength);
+	WindParticles(float posZ, bool directionRight,float width,
+		int pattern, int strength, float speedZ);
 	~WindParticles();
 	void Update();
 	void Draw();

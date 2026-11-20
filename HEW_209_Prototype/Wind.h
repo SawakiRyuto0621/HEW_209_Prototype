@@ -15,7 +15,7 @@ private:
 	WindArea* m_pWindArea;
 
 public:
-	Wind(bool directionRight, int strength); // 右向きか、強度
+	Wind(bool directionRight, int strength, float SpeedZ); // 右向きか、強度
 	~Wind();
 	void Update();
 	void Draw();
