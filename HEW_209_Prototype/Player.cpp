@@ -183,3 +183,14 @@ DirectX::XMFLOAT3 Player::GetPlayerSpeed() // Playerの速度を取得(現在は主にX)
 {
 	return m_fSpeed;
 }
+
+void Player::AddSpeed(float x, float y, float z) //速度変更
+{
+	float minSpeed = METER(20.0f * 1000) / (FPS * 60 * 60); //最低速度
+	if (m_fSpeed.z + z * 2 >= minSpeed)
+	{
+		m_fSpeed.x += x;
+		m_fSpeed.y += y;
+		m_fSpeed.z += z;
+	}
+}

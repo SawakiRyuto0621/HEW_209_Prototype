@@ -1,7 +1,10 @@
 // 木
-// 林　11/16
+// 林　11/16 作成
+// 林　11/22 木のペア生成を作成
+
 #include "Tree.h"
 #include "ShaderList.h"
+#include "Defines.h"
 
 Tree::Tree()
 	:m_pos{0.0f,0.0f,0.0f}
@@ -85,5 +88,33 @@ void Tree::SetScale(float x, float y, float z)
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+DirectX::XMFLOAT3 Tree::GetPos()
+{
+	return DirectX::XMFLOAT3(
+		m_pos[0],
+		m_pos[1],
+		m_pos[2]
+	);
+}
+
+void Tree::CreateTreePair(std::vector<Tree*>& tree, float z, float distance)
+{
+	// 1本目の木
+	Tree* tree1 = new Tree();
+
+	tree1->SetScale(0.8f, 0.8f, 0.8f);
+	tree1->SetPos(METER(distance), 0.0f, z);
+
+	// 2本目の木
+	Tree* tree2 = new Tree();
+
+	tree2->SetScale(0.8f, 0.8f, 0.8f);
+	tree2->SetPos(METER(-distance), 0.0f, z);
+
+	// vectorに追加
+	tree.push_back(tree1);
+	tree.push_back(tree2);
 }
 

@@ -18,6 +18,8 @@ public:
 
 	void SetPos(float x, float y, float z);
 	void SetScale(float x, float y, float z);
-
+	DirectX::XMFLOAT3 GetPos();
+	// –Ø‚ğƒyƒA‚Å¶¬‚·‚é
+	static void CreateTreePair(std::vector<Tree*>& tree,float z,float distance);
 	
 };

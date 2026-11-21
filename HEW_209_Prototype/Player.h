@@ -25,5 +25,5 @@ public:
 	void SetScale(float x, float y, float z);
 	bool GetKeyPress();
 	DirectX::XMFLOAT3 GetPlayerSpeed(); // Player‚Ì‘¬“x‚ğæ“¾(Œ»İ‚Íå‚ÉX)
-	
+	void AddSpeed(float x, float y, float z); //Player‚É‘Î‚·‚é‘¬“x‚Ì•ÏX
 };

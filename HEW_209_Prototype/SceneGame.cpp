@@ -10,9 +10,13 @@
 // ********************  開発履歴  ********************
 // 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
 // 2026/11/19  *****  陳  *****  風で Z軸スクロール加速(テスト待ち)
+// 2026/11/20  *****  林  *****  木に近づいた時の加速処理(テスト待ち）
+// 2026/11/22  *****  林  *****  木の処理をコンテナでの管理に変更
 
 constexpr float AddSpeedWind = METER(500.0f) / (FPS * 60 * 60);
 constexpr float DevideSpeedWind = METER(-500.0f) / (FPS * 60 * 60);
+constexpr float TreeBoostSpeed = METER(1);
+
 
 SceneGame::SceneGame()
 	: m_pPlayer(nullptr)
@@ -20,7 +24,6 @@ SceneGame::SceneGame()
 	, m_pGround(nullptr)
 	, m_pModel(nullptr)
 	, m_pStage(nullptr)
-	//, m_pTree(nullptr)
 	, m_pPrey(nullptr)
 {
 	m_pGround = new Ground;
@@ -42,27 +45,21 @@ SceneGame::SceneGame()
 	m_pStage = new Stage();
 
 	// 木のオブジェクト
-	/*m_pTree = new Tree();
-	m_pTree->SetPos(0.0f, 0.0f, 0.0f);
-	m_pTree->SetScale(0.8f, 0.8f, 0.8f);*/
-	for (int i = 0; i < TREE_NUM; ++i) {
-		m_pTree[i] = nullptr;
-		m_pTree[i] = new Tree();
-		m_pTree[i]->SetScale(0.8f, 0.8f, 0.8f);
-	}
-	// 1本ずつ異なる座標に指定
-	m_pTree[0]->SetPos(1.8f, 0.0f, 1.8f);
-	m_pTree[1]->SetPos(-1.8f, 0.0f, 1.8f);
+	/*for (int i = 0; i < TreeNum; ++i) {
+		Tree* tree = new Tree();
+		tree->SetScale(0.8f, 0.8f, 0.8f);
+		m_pTree.push_back(tree);
+	}*/
+	// 木のポジション決め（CreateTreePair(m_pTree,位置,間隔))
+	//１
+	Tree::CreateTreePair(m_pTree, 0.8f, 1.8f);
+	//２
+	Tree::CreateTreePair(m_pTree, 3.8f, 1.8f);
 
 	// 獲物オブジェクト
 	m_pPrey = new Prey();
 	m_pPrey->SetPos(0.0f, 3.0f, 0.0f);
 	m_pPrey->SetScale(0.5f, 0.25f, 0.5f);
-
-	/*m_pModel = new Model();
-	if (!m_pModel->Load("Assets/Model/tree_forest.fbx", 1.0f, Model::None)) {
-		MessageBox(NULL, "tree_forest.fbx", "error", MB_OK);
-	}*/
 
 
 	//深度テストの有効性
@@ -71,22 +68,26 @@ SceneGame::SceneGame()
 
 SceneGame::~SceneGame()
 {
-	/*if (m_pModel) {
-		delete m_pModel;
-		m_pModel = nullptr;
-	}*/
 	if (m_pPrey) {
 		delete m_pPrey;
 		m_pPrey = nullptr;
 	}
 
-	for (int i = 0; i < TREE_NUM; ++i) {
-		if (m_pTree[i]) {
-			delete m_pTree[i];
-			m_pTree[i] = nullptr;
-		}
-	}
+	//for (int i = 0; i < m_pTree.size(); ++i) {
+	//	if (m_pTree[i]) {
+	//		delete m_pTree[i];
+	//		m_pTree[i] = nullptr;
+	//	}
+	//	m_pTree.clear();
+	//}
 
+	//木のオブジェクトを削除
+	for (Tree* tree : m_pTree)
+	{
+		delete tree;
+	}
+		m_pTree.clear();
+	
 	if (m_pStage) {
 		delete m_pStage;
 		m_pStage = nullptr;
@@ -115,8 +116,9 @@ void SceneGame::Update()
 	WindtoPlayer(); // 風で加速の判定
 	m_pCamera->Update();
 	m_pStage->Update();
-	for (int i = 0; i < TREE_NUM; ++i) {
-		m_pTree[i]->Update();
+	for (Tree* tree : m_pTree) 
+	{
+		tree->Update();
 	}
 	m_pPrey->Update();
 
@@ -135,55 +137,11 @@ void SceneGame::Draw()
 	m_pGround->Draw();
 	m_pPlayer->Draw();
 	m_pStage->Draw();
-	for (int i = 0; i < TREE_NUM; ++i) {
-		m_pTree[i]->Draw();
+	for (Tree* tree : m_pTree) 
+	{
+		tree->Draw();
 	}
 	m_pPrey->Draw();
-
-	/*
-	if (m_pModel) {
-		//モデルを表示するためのワールド行列を計算
-		DirectX::XMFLOAT4X4 fWorld;
-		//DirectX::XMMATRIX world;
-		//変換行列の計算
-		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-		DirectX::XMMATRIX Rx = DirectX::XMMatrixRotationX(0.0f);
-		DirectX::XMMATRIX Ry = DirectX::XMMatrixRotationY(0.0f);
-		DirectX::XMMATRIX Rz = DirectX::XMMatrixRotationZ(0.0f);
-		DirectX::XMMATRIX R = Rx * Ry * Rz;
-		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f);
-		DirectX::XMMATRIX world = S * R * T;
-
-		DirectX::XMStoreFloat4x4(&fWorld, world);
-
-		//シェーダーに必要なデータを設定
-		ShaderList::SetWorld(fWorld);
-		ShaderList::SetView(m_pCamera->GetViewMatrix());
-		ShaderList::SetProjection(m_pCamera->GetProjectionMatrix());
-
-		// モデルに使用する各種シェーダーを設定
-		m_pModel->SetVertexShader(ShaderList::GetVS(ShaderList::VS_WORLD));
-		m_pModel->SetPixelShader(ShaderList::GetPS(ShaderList::PS_LAMBERT));
-
-		//メッシュ別にモデルを表示
-		for (int i = 0; i < m_pModel->GetMeshNum(); ++i) {
-			// モデルのメッシュを取得
-			const Model::Mesh* mesh = m_pModel->GetMesh(i);
-
-			//メッシュに割り当てられているマテリアルを取得
-			Model::Material material = *m_pModel->GetMaterial(mesh->materialID);
-
-			//シェーダーへマテリアルを設定
-			ShaderList::SetMaterial(material);
-
-			//モデルの描画（内部的に一括で行っていた描画処理を、メッシュごとの描画処理に変更）
-			m_pModel->Draw(i);
-		}
-
-
-	}
-	*/
-
 
 }
 
@@ -275,3 +233,43 @@ void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 		}
 	}
 }
+
+void SceneGame::TreeAcc()	//木と木の間で加速する処理
+{
+	// Playerの現在位置を取得
+	DirectX::XMFLOAT3 m_player = m_pPlayer->GetPos();
+
+	// 2組の木を順番に調べる
+	for (int i = 0; i < m_pTree.size() /2; i++)
+	{
+		// 1組目なら0番と1番
+		// 2組目なら2番と3番
+		int index = i * 2;
+
+		// 木の位置を取得
+		DirectX::XMFLOAT3 tree1 = m_pTree[index]->GetPos();
+
+		DirectX::XMFLOAT3 tree2 = m_pTree[index + 1]->GetPos();
+
+		// 2本の木の中央のZ座標
+		float centerZ = tree1.z;
+
+		// Playerが木の位置を通過したか
+		bool passed =
+			m_player.z < centerZ &&
+			m_player.z >= centerZ;
+
+		// Playerが2本の木の間にいるか
+		bool between =
+			m_player.z > tree2.z &&
+			m_player.z < tree1.z;
+
+		// 両方の条件を満たしたら加速
+		if (passed && between)
+		{
+			m_pPlayer->AddSpeed(0,0,TreeBoostSpeed);
+			
+		}
+	}
+}
+

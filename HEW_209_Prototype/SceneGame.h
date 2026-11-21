@@ -10,10 +10,23 @@
 #include "Prey.h"
 #include "DirectXMath.h"
 
+
+
 class Stage;
 
 class SceneGame : public Scene
 {
+
+private:
+	
+	Player* m_pPlayer; //プレイヤー
+	Camera* m_pCamera;
+	Ground* m_pGround; //地面オブジェクト
+	Model* m_pModel;
+	Stage* m_pStage; // ステージ
+	std::vector<Tree*> m_pTree; //木オブジェクトを管理するコンテナ
+	Prey* m_pPrey; //獲物
+
 public:
 	SceneGame();
 	~SceneGame();
@@ -21,17 +34,9 @@ public:
 	void Draw() final;
 	bool bInWind(); // Player Z座標が風の範囲内かチェック
 	void WindtoPlayer(); // 加速で Zスクロールが加速
+	void TreeAcc();	//木の加速処理
 
-private:
-	static const int TREE_NUM = 2;	// 木の管理（必要に応じて本数を変更可）
 
-	Player* m_pPlayer; //プレイヤー
-	Camera* m_pCamera;
-	Ground* m_pGround; //地面オブジェクト
-	Model* m_pModel;
-	Stage* m_pStage; // ステージ
-	Tree* m_pTree[TREE_NUM]; //木オブジェクト 複数の木をまとめて管理するための配列
-	Prey* m_pPrey; //獲物
 };
 
 #endif // __SCENE_GAME_H__
