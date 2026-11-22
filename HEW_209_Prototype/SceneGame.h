@@ -13,6 +13,7 @@
 
 
 class Stage;
+class UI;
 
 class SceneGame : public Scene
 {
@@ -26,6 +27,7 @@ private:
 	Stage* m_pStage; // ステージ
 	std::vector<Tree*> m_pTree; //木オブジェクトを管理するコンテナ
 	Prey* m_pPrey; //獲物
+	UI* m_pUI;
 
 public:
 	SceneGame();

@@ -6,15 +6,17 @@
 #include "DirectXMath.h"
 #include "CameraPlayer.h"
 #include "Defines.h"
+#include "UI.h"
 
 // ********************  開発履歴  ********************
 // 2026/11/16  *****  陳  *****  風の情報取得、Playerの Z座標が範囲内かチェックする関数を作成
 // 2026/11/19  *****  陳  *****  風で Z軸スクロール加速(テスト待ち)
 // 2026/11/20  *****  林  *****  木に近づいた時の加速処理(テスト待ち）
 // 2026/11/22  *****  林  *****  木の処理をコンテナでの管理に変更
+// 2026/11/22  *****  陳  *****  UIで Speed Meterが表示される、速度も反映(Stageの仮速度)(最大200km/h)
 
-constexpr float AddSpeedWind = METER(500.0f) / (FPS * 60 * 60);
-constexpr float DevideSpeedWind = METER(-500.0f) / (FPS * 60 * 60);
+constexpr float AddSpeedWind = METER(0.5f) * 1000 / (FPS * 60 * 60);
+constexpr float DevideSpeedWind = METER(-0.5f) * 1000 / (FPS * 60 * 60);
 constexpr float TreeBoostSpeed = METER(1);
 
 
@@ -25,6 +27,7 @@ SceneGame::SceneGame()
 	, m_pModel(nullptr)
 	, m_pStage(nullptr)
 	, m_pPrey(nullptr)
+	, m_pUI(nullptr)
 {
 	m_pGround = new Ground;
 	m_pGround->SetPos(0.0f, -0.4f, 0.0f);
@@ -61,6 +64,7 @@ SceneGame::SceneGame()
 	m_pPrey->SetPos(0.0f, 3.0f, 0.0f);
 	m_pPrey->SetScale(0.5f, 0.25f, 0.5f);
 
+	m_pUI = new UI();
 
 	//深度テストの有効性
 	SetDepthTest(DEPTH_ENABLE);
@@ -81,6 +85,7 @@ SceneGame::~SceneGame()
 	//	m_pTree.clear();
 	//}
 
+	if (m_pUI) { delete m_pUI; m_pUI = nullptr; }
 	//木のオブジェクトを削除
 	for (Tree* tree : m_pTree)
 	{
@@ -121,6 +126,9 @@ void SceneGame::Update()
 		tree->Update();
 	}
 	m_pPrey->Update();
+	float speedStage = abs(m_pStage->GetSpeedZ() / 1000 * (FPS * 60 * 60));
+	m_pUI->SetSpeed(speedStage);
+	m_pUI->Update();
 
 }
 
@@ -142,6 +150,12 @@ void SceneGame::Draw()
 		tree->Draw();
 	}
 	m_pPrey->Draw();
+
+	// UI用に2D設定切り替え
+	ShaderList::SetView(m_pCamera->GetViewMatrix2D());
+	ShaderList::SetProjection(m_pCamera->GetProjectionMatrix2D());
+	//
+	m_pUI->Draw();
 
 }
 

@@ -44,6 +44,7 @@ Stage::~Stage()
 
 void Stage::Update()
 {
+	if (abs(m_fSpeed[2] / 1000 * (FPS * 60 * 60)) > 200) m_fSpeed[2] = 200.0f * 1000 / (FPS * 60 * 60);
 	SetSpeed(m_fSpeed[0], m_fSpeed[1], m_fSpeed[2]);
 
 	m_pWind->Update(); // ïó
@@ -73,9 +74,6 @@ void Stage::Update()
 			m_pWind = new Wind(m_bWindDirectionRight, m_nWindStrength); // çƒê∂ê¨
 		}
 	}
-	else 
-	{ 
-	}
 }
 
 void Stage::Draw()
@@ -95,6 +93,11 @@ void Stage::SetScale(float x, float y, float z)
 	m_scale[0] = x;
 	m_scale[1] = y;
 	m_scale[2] = z;
+}
+
+float Stage::GetSpeedZ()
+{
+	return m_fSpeed[2];
 }
 
 void Stage::SetSpeed(float x, float y, float z)
