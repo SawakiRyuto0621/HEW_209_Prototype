@@ -4,9 +4,9 @@
 #include "Defines.h"
 
 Player::Player()
-	: m_pos{0.0f, 0.0f,0.0f}
-	, m_scale{1.0f, 1.0f, 1.0f}
-	, m_angle(0.0f)
+	: m_pos{0.0f, 0.0f,0.0f} , m_scale{1.0f, 1.0f, 1.0f}, m_moveSpeed{0.0f, 0.0f, 0.0f} // 移動スピード
+	, m_turnAngle(0.0f) // 旋回角度
+	, m_upAngle(0.0f) // 上下角度
 	, m_fSpeed {0.0f, 0.0f, 0.0f} // Playerの速度を取得(現在は主にX)
 	, m_bTurn(false) // 左右旋回フラグ
 	, m_bUpDown(false) // 上下フラグ
@@ -22,9 +22,16 @@ Player::~Player()
 
 void Player::Update()
 {
-	
+	// プレイヤー前進（仮）
+	m_moveSpeed[2] = METER(2.0f) / FPS;
+	m_pos[2] += m_moveSpeed[2];
+	// デバック
+	if(1)
+	if (IsKeyPress('O')) { m_pos[2] = 0.0f; }
+
+
 	const float speed = METER(5.0f) / FPS;
-	
+
 	if (IsKeyPress('A') || IsKeyPress('D') || IsKeyPress('W') || IsKeyPress('S'))
 	{ 
 		/*if (!m_bBoost)
@@ -35,8 +42,8 @@ void Player::Update()
 				// 移動制限まで移動
 				if (m_pos[0] > METER(-5.5f)) { m_pos[0] -= speed; }
 				// 旋回角度
-				if (m_angle < DirectX::XMConvertToRadians(25.0f))
-					m_angle += DirectX::XMConvertToRadians(1.0f);
+				if (m_turnAngle < DirectX::XMConvertToRadians(25.0f))
+					m_turnAngle += DirectX::XMConvertToRadians(1.0f);
 				m_fSpeed.x = -speed;
 			}
 			else if (IsKeyPress('D')) // 右旋回
@@ -45,16 +52,16 @@ void Player::Update()
 				// 移動制限まで移動
 				if (m_pos[0] < METER(5.5f)) { m_pos[0] += speed; }
 				// 旋回角度
-				if (m_angle > DirectX::XMConvertToRadians(-25.0f))
-					m_angle -= DirectX::XMConvertToRadians(1.0f);
+				if (m_turnAngle > DirectX::XMConvertToRadians(-25.0f))
+					m_turnAngle -= DirectX::XMConvertToRadians(1.0f);
 				m_fSpeed.x = speed;
 			}
 			
 			if (IsKeyPress('W'))
 			{
 				m_bUpDown = true;
-				if (m_angle > DirectX::XMConvertToRadians(-25.0f))
-					m_angle -= DirectX::XMConvertToRadians(1.0f);
+				if (m_upAngle > DirectX::XMConvertToRadians(-25.0f))
+					m_upAngle -= DirectX::XMConvertToRadians(1.0f);
 				if (IsKeyPress('W') && IsKeyPress(VK_SPACE))
 					if (m_pos[1] < METER(3.0f)) { m_pos[1] += speed; }
 
@@ -62,8 +69,8 @@ void Player::Update()
 			else if (IsKeyPress('S'))
 			{
 				m_bUpDown = true;
-				if (m_angle < DirectX::XMConvertToRadians(25.0f))
-					m_angle += DirectX::XMConvertToRadians(1.0f);
+				if (m_upAngle < DirectX::XMConvertToRadians(25.0f))
+					m_upAngle += DirectX::XMConvertToRadians(1.0f);
 				if (IsKeyPress('S') && IsKeyPress(VK_CONTROL))
 					if (m_pos[1] > METER(0.5f))
 					{
@@ -84,29 +91,22 @@ void Player::Update()
 		m_bTurn = false;
 		m_bUpDown = false;
 		m_bKeyPress = false;
-		m_angle = 0.0f;
+		//m_angle = 0.0f;
+		// 旋回の角度を徐々に戻す
+		if (m_turnAngle < DirectX::XMConvertToRadians(0.0f))
+			m_turnAngle += DirectX::XMConvertToRadians(1.0f);
+		else if(m_turnAngle > DirectX::XMConvertToRadians(0.0f))
+			m_turnAngle -= DirectX::XMConvertToRadians(1.0f);
+		// 上下の角度を徐々に戻す
+		if (m_upAngle < DirectX::XMConvertToRadians(0.0f))
+			m_upAngle += DirectX::XMConvertToRadians(1.0f);
+		else if (m_upAngle > DirectX::XMConvertToRadians(0.0f))
+			m_upAngle -= DirectX::XMConvertToRadians(1.0f);
+
+
 		m_fSpeed.x = 0.0f;
 	}
 
-	//if (IsKeyPress('W') || IsKeyPress('S'))
-	//{
-	//	m_bUpDown = true;
-	//	if (IsKeyPress('W'))
-	//	{
-	//		if (m_angle > DirectX::XMConvertToRadians(25.0f))
-	//			m_angle += DirectX::XMConvertToRadians(1.0f);
-	//	}
-	//	else if (IsKeyPress('S'))
-	//	{
-	//		if (m_angle > DirectX::XMConvertToRadians(-25.0f))
-	//			m_angle -= DirectX::XMConvertToRadians(1.0f);
-	//	}
-	//}
-	//else
-	//{
-	//	m_bUpDown = false;
-	//	m_angle = 0.0f;
-	//}
 }
 
 void Player::Draw()
@@ -114,30 +114,29 @@ void Player::Draw()
 	//変換行列の計算
 	DirectX::XMMATRIX mat;
 	
-	if (m_bTurn || m_bUpDown)
+	if (m_bTurn)
 	{
-		if (m_bTurn)
-		{
-			DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(m_angle);
-			DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
-			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
-			mat = S * Z * T;
-		}
-		else if(m_bUpDown)
-		{
-			DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(m_angle);
-			DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
-			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
-			mat = S * X * T;
-		}
-	}
-	else
-	{
+		DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(m_turnAngle);
 		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
 		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
-		mat = S * T;
+		mat = S * Z * T;
 	}
-
+	else if(m_bUpDown)
+	{
+		DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(m_upAngle);
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
+		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
+		mat = S * X * T;
+	}
+	else 
+	{
+		DirectX::XMMATRIX Z = DirectX::XMMatrixRotationZ(m_turnAngle);
+		DirectX::XMMATRIX X = DirectX::XMMatrixRotationX(m_upAngle);
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_pos[0], m_pos[1], m_pos[2]);
+		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(m_scale[0], m_scale[1], m_scale[2]);
+		mat = S * X * Z * T;
+	}
+	
 	//変換行列をGPUに渡すための前処理
 	mat = DirectX::XMMatrixTranspose(mat); // 行列を転置する
 	DirectX::XMFLOAT4X4 fMat;

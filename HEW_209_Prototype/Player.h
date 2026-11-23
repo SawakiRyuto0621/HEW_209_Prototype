@@ -6,11 +6,13 @@ class Player
 private:
 	float m_pos[3];
 	float m_scale[3];
-	float m_angle;
-	bool m_bKeyPress; // キーを押しているか（今は左右だけ）
-	bool m_bTurn; // 左右旋回フラグ
-	bool m_bUpDown; // 上下フラグ
-	bool m_bBoost;  // 加速フラグ
+	float m_moveSpeed[3];
+	float m_turnAngle; // 旋回角度
+	float m_upAngle;   // 上下角度
+	bool m_bKeyPress;  // キーを押しているか（今は左右だけ）
+	bool m_bTurn;      // 左右旋回フラグ
+	bool m_bUpDown;    // 上下フラグ
+	bool m_bBoost;     // 加速フラグ
 	DirectX::XMFLOAT3 m_fSpeed; // Playerの速度を取得(現在は主にX)
 
 public:
