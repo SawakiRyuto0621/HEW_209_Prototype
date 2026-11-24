@@ -30,8 +30,8 @@ SceneGame::SceneGame()
 	, m_pUI(nullptr)
 {
 	m_pGround = new Ground;
-	m_pGround->SetPos(0.0f, -0.4f, 0.0f);
-	m_pGround->SetScale(5.0f, 0.5f, 5.0f);
+	m_pGround->SetPos(0.0f, -0.4f, 23.0f);
+	m_pGround->SetScale(13.0f, 0.5f, 50.0f);
 
 	m_pCamera = new CameraDebug();
 	CameraPlayer* pCamera = new CameraPlayer();
