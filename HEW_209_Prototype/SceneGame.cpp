@@ -17,8 +17,8 @@
 
 constexpr float AddSpeedWind = METER(0.5f) * 1000 / (FPS * 60 * 60);
 constexpr float DevideSpeedWind = METER(-0.5f) * 1000 / (FPS * 60 * 60);
-constexpr float TreeBoostSpeed = METER(1);
-
+constexpr float TreeBoostSpeed = METER(3.0f) / (1.5f * FPS);
+bool m_bTreeBoost;
 
 SceneGame::SceneGame()
 	: m_pPlayer(nullptr)
@@ -30,8 +30,8 @@ SceneGame::SceneGame()
 	, m_pUI(nullptr)
 {
 	m_pGround = new Ground;
-	m_pGround->SetPos(0.0f, -0.4f, 0.0f);
-	m_pGround->SetScale(5.0f, 0.5f, 5.0f);
+	m_pGround->SetPos(0.0f, -0.4f, 23.0f);
+	m_pGround->SetScale(13.0f, 0.5f, 50.0f);
 
 	m_pCamera = new CameraDebug();
 	CameraPlayer* pCamera = new CameraPlayer();
@@ -125,6 +125,7 @@ void SceneGame::Update()
 	{
 		tree->Update();
 	}
+	TreeAcc(); // 木の間で加速
 	m_pPrey->Update();
 	float speedStage = abs(m_pStage->GetSpeedZ() / 1000 * (FPS * 60 * 60));
 	m_pUI->SetSpeed(speedStage);
@@ -248,41 +249,48 @@ void SceneGame::WindtoPlayer() // 加速で Zスクロールが加速
 	}
 }
 
-void SceneGame::TreeAcc()	//木と木の間で加速する処理
+void SceneGame::TreeAcc()
 {
 	// Playerの現在位置を取得
-	DirectX::XMFLOAT3 m_player = m_pPlayer->GetPos();
+	DirectX::XMFLOAT3 player = m_pPlayer->GetPos();
 
 	// 2組の木を順番に調べる
-	for (int i = 0; i < m_pTree.size() /2; i++)
+	for (int i = 0; i < m_pTree.size() / 2; i++)
 	{
 		// 1組目なら0番と1番
-		// 2組目なら2番と3番
+    	// 2組目なら2番と3番
 		int index = i * 2;
 
 		// 木の位置を取得
 		DirectX::XMFLOAT3 tree1 = m_pTree[index]->GetPos();
-
 		DirectX::XMFLOAT3 tree2 = m_pTree[index + 1]->GetPos();
 
-		// 2本の木の中央のZ座標
-		float centerZ = tree1.z;
+		// 木の間の範囲
+		float minX = min(tree1.x, tree2.x);
+		float maxX = max(tree1.x, tree2.x);
 
-		// Playerが木の位置を通過したか
-		bool passed =
-			m_player.z < centerZ &&
-			m_player.z >= centerZ;
-
-		// Playerが2本の木の間にいるか
+		// 木の間にいるか
 		bool between =
-			m_player.z > tree2.z &&
-			m_player.z < tree1.z;
+			player.x > minX &&
+			player.x < maxX;
+
+		// 木のZ座標付近にいるか
+		bool nearTree =
+			player.z >= tree1.z - METER(0.5f) &&
+			player.z <= tree1.z + METER(0.5f);
 
 		// 両方の条件を満たしたら加速
-		if (passed && between)
+		if (between && nearTree)
 		{
-			m_pPlayer->AddSpeed(0,0,TreeBoostSpeed);
-			
+			if (!m_bTreeBoost)
+			{
+				m_pPlayer->AddSpeed(0.0f, 0.0f, TreeBoostSpeed);
+				m_bTreeBoost = true;
+			}
+		}
+		else
+		{
+			m_bTreeBoost = false;
 		}
 	}
 }
