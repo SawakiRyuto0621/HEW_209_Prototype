@@ -166,7 +166,6 @@
     <ClCompile Include="Startup.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Tree.cpp" />
-    <ClCompile Include="TreeAcc_Dec.cpp" />
     <ClCompile Include="TreeCollision.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="Wind.cpp" />
@@ -200,7 +199,6 @@
     <ClInclude Include="Stage.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Tree.h" />
-    <ClInclude Include="TreeAcc_Dec.h" />
     <ClInclude Include="TreeCollision.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Wind.h" />
