@@ -99,19 +99,19 @@ DirectX::XMFLOAT3 Tree::GetPos()
 	);
 }
 
-void Tree::CreateTreePair(std::vector<Tree*>& tree, float z, float distance)
+void Tree::CreateTreePair(std::vector<Tree*>& tree,  float z, float stating, float distance)
 {
 	// 1–{–Ú‚Ì–Ø
 	Tree* tree1 = new Tree();
 
 	tree1->SetScale(0.8f, 0.8f, 0.8f);
-	tree1->SetPos(METER(distance), 0.0f, z);
+	tree1->SetPos(METER(stating), 0.0f, z);
 
 	// 2–{–Ú‚Ì–Ø
 	Tree* tree2 = new Tree();
 
 	tree2->SetScale(0.8f, 0.8f, 0.8f);
-	tree2->SetPos(METER(-distance), 0.0f, z);
+	tree2->SetPos(METER(stating) - METER(-distance), 0.0f, z);
 
 	// vector‚É’Ç‰Á
 	tree.push_back(tree1);

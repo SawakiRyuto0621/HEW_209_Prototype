@@ -17,7 +17,7 @@
 
 constexpr float AddSpeedWind = METER(0.5f) * 1000 / (FPS * 60 * 60);
 constexpr float DevideSpeedWind = METER(-0.5f) * 1000 / (FPS * 60 * 60);
-constexpr float TreeBoostSpeed = METER(3.0f) / (1.5f * FPS);
+constexpr float TreeBoostSpeed = 10.0f * 1000.0f / (FPS * 60 * 60);
 bool m_bTreeBoost;
 
 SceneGame::SceneGame()
@@ -53,11 +53,11 @@ SceneGame::SceneGame()
 		tree->SetScale(0.8f, 0.8f, 0.8f);
 		m_pTree.push_back(tree);
 	}*/
-	// 木のポジション決め（CreateTreePair(m_pTree,位置,間隔))
+	// 木のポジション決め（CreateTreePair(m_pTree,位置,始点,間隔))
 	//１
-	Tree::CreateTreePair(m_pTree, 3.8f, 1.8f);
+	Tree::CreateTreePair(m_pTree, 3.8f, -5.0f, 2.5f);
 	//２
-	Tree::CreateTreePair(m_pTree, 8.8f, 1.5f);
+	Tree::CreateTreePair(m_pTree, 8.8f, 2.0f, 1.8f);
 
 	// 獲物オブジェクト
 	m_pPrey = new Prey();
