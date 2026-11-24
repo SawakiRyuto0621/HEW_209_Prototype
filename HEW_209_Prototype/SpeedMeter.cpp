@@ -8,8 +8,9 @@
 constexpr int g_DigitSpeed = 3; // 数字の数（配列の要素数）
 constexpr int g_AnimScoreSplitX = 5; // 画像の分割数(横)
 constexpr int g_AnimScoreSplitY = 2; // 画像の分割数(縦)
-constexpr float g_posX = 0.5f;
-constexpr float g_posY = -0.7f;
+constexpr float g_posX = 0.4f;
+constexpr float g_posY = -0.85f;
+constexpr int g_indexWord = g_DigitSpeed;
 
 struct TSPEED {
 	DirectX::XMFLOAT2 m_Numberpos;
@@ -24,22 +25,28 @@ TSPEED			g_aSpeedDigits[g_DigitSpeed]; // Speed構造体配列
 
 SpeedMeter::SpeedMeter()
 	: m_pTexture(nullptr)
+	, m_pTextureWord(nullptr)
 	, m_pNumberBuf(nullptr)
 	, m_pNumberTex(nullptr)
 	, m_pos{ g_posX, g_posY }
+	, m_posWord {g_posX, g_posY}
 	, m_nSpeed(123)
 	, m_bSpeedAdded(false)
 {
 	m_pTexture = new Texture();
-	//m_pTexture->Create("Numbers.png");
 	if (FAILED(m_pTexture->Create("Assets/Model/Numbers.png")))
 	{
 		MessageBox(NULL, "SpeedMeter.cpp, Texture Load, Numbers.png", "Error", MB_OK);
 	}
+	m_pTextureWord = new Texture();
+	if (FAILED(m_pTextureWord->Create("Assets/Model/kmPerH.png")))
+	{
+		MessageBox(NULL, "SpeedMeter.cpp, Texture Load, kmPerH.png", "Error", MB_OK);
+	}
 	float basePosX = m_pos.x; float basePosY = m_pos.y;
 	for (int i = 0; i < g_DigitSpeed; ++i)
 	{
-		g_aSpeedDigits[i].m_Numberpos.x = basePosX + 0.2f * i /*+ g_SpeedSizeX * i*/;
+		g_aSpeedDigits[i].m_Numberpos.x = basePosX + 0.1f * i /*+ g_SpeedSizeX * i*/;
 		g_aSpeedDigits[i].m_Numberpos.y = basePosY;
 
 
@@ -52,11 +59,14 @@ SpeedMeter::SpeedMeter()
 		g_aSpeedDigits[i].m_use = true;
 		g_aSpeedDigits[i].m_currentAnimNo = 0;
 	}
+	m_posWord.x = basePosX + 0.1f * g_indexWord + 0.1f;
+	m_posWord.y = basePosY - 0.05f;
 }
 
 
 SpeedMeter::~SpeedMeter()
 {
+	if (m_pTextureWord) { delete m_pTextureWord; m_pTextureWord = nullptr; }
 	if (m_pTexture) { delete m_pTexture; m_pTexture = nullptr; }
 }
 
@@ -67,6 +77,7 @@ void SpeedMeter::Update()
 
 void SpeedMeter::Draw()
 {
+	// Numbers
 	for (int i = 0; i < g_DigitSpeed; i++)
 	{
 		// 未使用のものは処理をしない
@@ -74,7 +85,7 @@ void SpeedMeter::Draw()
 		{
 			continue;
 		}
-		Sprite::SetSize(DirectX::XMFLOAT2(0.2f, 0.5f)); // Size
+		Sprite::SetSize(DirectX::XMFLOAT2(0.1f, 0.3f)); // Size
 		Sprite::SetUVScale(DirectX::XMFLOAT2(1.0f / g_AnimScoreSplitX, 1.0f / g_AnimScoreSplitY));
 		Sprite::SetUVPos(DirectX::XMFLOAT2(g_aSpeedDigits[i].m_posTexCoord.x, g_aSpeedDigits[i].m_posTexCoord.y));
 		//  変換行列の計算
@@ -88,6 +99,21 @@ void SpeedMeter::Draw()
 		Sprite::SetTexture(m_pTexture);
 		Sprite::Draw();
 	}
+	// km/h
+	Sprite::SetSize(DirectX::XMFLOAT2(0.3f, 0.3f)); // Size
+	Sprite::SetUVScale(DirectX::XMFLOAT2{ 1.0f, 1.0f });
+	Sprite::SetUVPos(DirectX::XMFLOAT2{1.0f, 1.0f});
+	//  変換行列の計算
+	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(m_posWord.x, m_posWord.y, 0.0f);
+	// 変換行列をGPUに渡すための前処理 
+	T = DirectX::XMMatrixTranspose(T); // 転置
+	DirectX::XMFLOAT4X4 fMat;
+	DirectX::XMStoreFloat4x4(&fMat, T);
+	Sprite::SetWorld(fMat);
+
+	Sprite::SetTexture(m_pTextureWord);
+	Sprite::Draw();
+
 }
 
 void SpeedMeter::SetSpeed(int speed)

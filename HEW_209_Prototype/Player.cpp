@@ -4,7 +4,7 @@
 #include "Defines.h"
 
 Player::Player()
-	: m_pos{0.0f, 0.0f,0.0f} , m_scale{1.0f, 1.0f, 1.0f}, m_moveSpeed{0.0f, 0.0f, 0.0f} // 移動スピード
+	: m_pos{0.0f, 0.0f,0.0f} , m_scale{1.0f, 1.0f, 1.0f}, m_moveSpeed{0.0f, 0.0f, METER(2.0f) / FPS } // 移動スピード
 	, m_turnAngle(0.0f) // 旋回角度
 	, m_upAngle(0.0f) // 上下角度
 	, m_fSpeed {0.0f, 0.0f, 0.0f} // Playerの速度を取得(現在は主にX)
@@ -23,11 +23,13 @@ Player::~Player()
 void Player::Update()
 {
 	// プレイヤー前進（仮）
-	m_moveSpeed[2] = METER(2.0f) / FPS;
-	m_pos[2] += m_moveSpeed[2];
+	m_pos[2] += m_moveSpeed.z;
 	// デバック
 	if(1)
-	if (IsKeyPress('O')) { m_pos[2] = 0.0f; }
+	if (IsKeyPress('O')) { 
+		m_pos[2] = 0.0f; 
+		m_moveSpeed.z = METER(2.0f) / FPS;
+	}
 
 
 	const float speed = METER(5.0f) / FPS;
@@ -186,10 +188,17 @@ DirectX::XMFLOAT3 Player::GetPlayerSpeed() // Playerの速度を取得(現在は主にX)
 void Player::AddSpeed(float x, float y, float z) //速度変更
 {
 	float minSpeed = METER(20.0f * 1000) / (FPS * 60 * 60); //最低速度
-	if (m_fSpeed.z + z * 2 >= minSpeed)
+	float maxSpeed = METER(200.0f * 1000) / (FPS * 60 * 60);//最高速度
+	if (m_moveSpeed.z + z * 2 >= minSpeed)
 	{
-		m_fSpeed.x += x;
-		m_fSpeed.y += y;
-		m_fSpeed.z += z;
+		m_moveSpeed.x += x;
+		m_moveSpeed.y += y;
+		m_moveSpeed.z += z;
+	}
+
+	// 最高速度を超えないようにする
+	if (m_moveSpeed.z > maxSpeed)
+	{
+		m_moveSpeed.z = maxSpeed;
 	}
 }
