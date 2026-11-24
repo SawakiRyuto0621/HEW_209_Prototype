@@ -6,7 +6,7 @@ class Player
 private:
 	float m_pos[3];
 	float m_scale[3];
-	float m_moveSpeed[3];
+	DirectX::XMFLOAT3 m_moveSpeed;
 	float m_turnAngle; // 旋回角度
 	float m_upAngle;   // 上下角度
 	bool m_bKeyPress;  // キーを押しているか（今は左右だけ）
