@@ -120,8 +120,8 @@
     <ClCompile Include="TreeCollision.cpp">
       <Filter>ソース ファイル\Work</Filter>
     </ClCompile>
-    <ClCompile Include="TreeAcc_Dec.cpp">
-      <Filter>ソース ファイル\System</Filter>
+    <ClCompile Include="CameraPlayer.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,8 +203,8 @@
     <ClInclude Include="TreeCollision.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
-    <ClInclude Include="TreeAcc_Dec.h">
-      <Filter>ヘッダー ファイル\System</Filter>
+    <ClInclude Include="CameraPlayer.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
