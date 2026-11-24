@@ -28,6 +28,7 @@ public:
 
 	void SetPos(float x, float y, float z);
 	void SetScale(float x, float y, float z);
+	float GetSpeedZ();
 	void SetSpeed(float x, float y, float z); // Stageに従属するオブジェクトの
 	void AddSpeed(float x, float y, float z); // 変更分の速度
 	float GetWindPosZ(); // 風の中心の Z座標を取得

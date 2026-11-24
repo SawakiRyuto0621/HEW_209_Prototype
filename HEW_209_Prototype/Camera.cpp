@@ -64,6 +64,44 @@ DirectX::XMFLOAT4X4 Camera::GetProjectionMatrix(bool transpose)
 	return mat;
 }
 
+DirectX::XMFLOAT4X4 Camera::GetViewMatrix2D(bool transpose)
+{
+	DirectX::XMMATRIX view = DirectX::XMMatrixIdentity();
+
+	//view = DirectX::XMMatrixLookAtLH
+	//(DirectX::XMVectorSet(m_pos.x, m_pos.y, m_pos.z, 0.0f),
+	//	DirectX::XMVectorSet(m_look.x, m_look.y, m_look.z, 0.0f),
+	//	DirectX::XMVectorSet(m_up.x, m_up.y, m_up.z, 0.0f));
+	if (transpose) {
+		view = DirectX::XMMatrixTranspose(view); // 転置
+	}
+
+	//  読み取りデータに変換
+	DirectX::XMFLOAT4X4 mat;
+	DirectX::XMStoreFloat4x4(&mat, view);
+	//  計算結果取得
+	return mat;
+}
+
+DirectX::XMFLOAT4X4 Camera::GetProjectionMatrix2D(bool transpose)
+{
+	//  プロジェクション変換行列の作成
+	DirectX::XMMATRIX proj;
+	proj = DirectX::XMMatrixOrthographicOffCenterLH(
+		0.0f, 1600.0f, 900.0f, 0.0f, 0.0f, 1.0f);
+	//proj = DirectX::XMMatrixPerspectiveFovLH(m_fovy, m_aspect, m_near, m_far);
+	if (transpose) {
+		proj = DirectX::XMMatrixTranspose(proj);
+	}
+
+	//  読み取りデータに変換
+	DirectX::XMFLOAT4X4 mat;
+	DirectX::XMStoreFloat4x4(&mat, proj);
+
+	//  計算結果取得
+	return mat;
+}
+
 DirectX::XMFLOAT3 Camera::GetPos()
 {
 	return m_pos;

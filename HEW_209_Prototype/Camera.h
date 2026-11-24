@@ -26,6 +26,10 @@ public:
 	DirectX::XMFLOAT4X4 GetViewMatrix(bool transpose = true);
 	DirectX::XMFLOAT4X4 GetProjectionMatrix(bool transpose = true);
 
+
+	DirectX::XMFLOAT4X4 GetViewMatrix2D(bool transpose = true);
+	DirectX::XMFLOAT4X4 GetProjectionMatrix2D(bool transpose = true);
+
 	DirectX::XMFLOAT3 GetPos();
 
 	DirectX::XMFLOAT3 GetLook();
