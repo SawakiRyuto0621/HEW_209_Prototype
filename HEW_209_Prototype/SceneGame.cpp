@@ -30,8 +30,8 @@ SceneGame::SceneGame()
 	, m_pUI(nullptr)
 {
 	m_pGround = new Ground;
-	m_pGround->SetPos(0.0f, -0.4f, 23.0f);
-	m_pGround->SetScale(13.0f, 0.5f, 50.0f);
+	m_pGround->SetPos(0.0f, -0.4f, 42.0f);
+	m_pGround->SetScale(15.0f, 0.5f, 90.0f);
 
 	m_pCamera = new CameraDebug();
 	CameraPlayer* pCamera = new CameraPlayer();
@@ -58,6 +58,28 @@ SceneGame::SceneGame()
 	Tree::CreateTreePair(m_pTree, 3.8f, -5.0f, 2.5f);
 	//２
 	Tree::CreateTreePair(m_pTree, 8.8f, 2.0f, 1.8f);
+	// 3
+	Tree::CreateTreePair(m_pTree, 8.8f, -4.0f, 2.8f);
+	// 4
+	Tree::CreateTreePair(m_pTree, 15.8f, -1.9f, 2.8f);
+	// 5
+	Tree::CreateTreePair(m_pTree, 23.8f, -4.0f, 2.8f);
+	// 6
+	Tree::CreateTreePair(m_pTree, 28.8f, 2.0f, 2.8f);
+	// 7
+	Tree::CreateTreePair(m_pTree, 36.8f, -3.0f, 2.8f);
+	// 8
+	Tree::CreateTreePair(m_pTree, 42.8f, 2.0f, 2.8f);
+	// 9
+	Tree::CreateTreePair(m_pTree, 46.8f, -4.0f, 2.8f);
+	// 10
+	Tree::CreateTreePair(m_pTree, 54.8f, -1.5f, 2.8f);
+	// 11
+	Tree::CreateTreePair(m_pTree, 65.8f, 2.0f, 2.8f);
+	// 12
+	Tree::CreateTreePair(m_pTree, 67.8f, -4.0f, 2.8f);
+	// 13
+	Tree::CreateTreePair(m_pTree, 80.8f, -2.5f, 4.8f);
 
 	// 獲物オブジェクト
 	m_pPrey = new Prey();
